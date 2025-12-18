@@ -41,9 +41,24 @@ packages:
   #   optional: true
 
   # Web server - uncomment to enable web interface
-  # web_server: !include
-  #   file: features/web-server.yaml
+  web_server: !include
+    file: features/web-server.yaml
+    optional: true
+
+  # Diagnostics - uncomment to enable WiFi signal and uptime sensors
+  diagnostics: !include
+    file: features/diagnostics.yaml
+    optional: true
+
+  # Prometheus - uncomment to enable metrics endpoint for monitoring
+  # prometheus: !include
+  #   file: features/prometheus.yaml
   #   optional: true
+
+  # Hardware monitoring - uncomment to enable ESP32 hardware sensors in HA
+  hardware_monitoring: !include
+    file: features/hardware-monitoring.yaml
+    optional: true
 
 ############################################
 # ESPHome Core Configuration
@@ -230,9 +245,9 @@ ota:
 
 # Logger configuration (will be overridden if syslog feature is enabled)
 logger:
-  level: DEBUG
+  level: INFO
   logs:
-    uart_parser: DEBUG
+    uart_parser: WARN
     uart: INFO
     sensor: INFO
     binary_sensor: INFO

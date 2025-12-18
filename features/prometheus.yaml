@@ -1,0 +1,13 @@
+# Optional Prometheus Metrics Feature
+# Exposes metrics endpoint for Prometheus scraping
+# Access via http://[device-name].local/metrics
+#
+# Provides built-in ESP32 hardware metrics:
+# - heap_free: Free heap memory (bytes)
+# - heap_max_block: Largest contiguous free memory block (bytes)
+# - cpu_frequency: CPU frequency (Hz)
+# - loop_time: Main loop execution time (ms)
+#
+# Also exposes all configured sensors, switches, and other entities
+
+prometheus:
