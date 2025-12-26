@@ -15,7 +15,7 @@
 
 # neato-connected
 
-If you want to learn about the inner workings of neato robots and my findings, please go [here](./findings.md), if you want to repair your neato to regain some of the lost functionallity, continue reading on this page. To make the proccess as easy as possible, I recommend to read the entire guide before actucally doing anything. 
+If you want to learn about the inner workings of neato robots and my findings, please go [here](./findings.md), if you want to repair your neato to regain some of the lost functionality, continue reading on this page. To make the process as easy as possible, I recommend to read the entire guide before actually doing anything. 
 
 Since the aim of this project is quite big, and my end goal is to make a package that can be used with any lidar-powered vacuum cleaner, I have decided to split it up into stages. We are currently at stage 1, and the first number in the version will define which stage the release is for.
 
@@ -37,13 +37,13 @@ Since the aim of this project is quite big, and my end goal is to make a package
 
 ### What is this?
 
-Repair your Neato Robot Vacuum to be controlled via home assistant after the shutdown of the Neato servers. The scope of this project is to give your robot at least the same functionallity as when you bought it, however as the project is in a development state, the current functionalities include:
+Repair your Neato Robot Vacuum to be controlled via home assistant after the shutdown of the Neato servers. The scope of this project is to give your robot at least the same functionality as when you bought it, however as the project is in a development state, the current functionalities include:
 - Viewing status
 - Start & stop cleaning
 - Editing settings (even some hidden settings!)
 - Scheduling via an home assistant automation/script
 
-The ability to create, view and edit floormaps so the robot can get the same functionallity with nogo-lines and zones is in the making.
+The ability to create, view and edit floormaps so the robot can get the same functionality with nogo-lines and zones is in the making.
 
 Main card | Settings View
 :-------------------------:|:-------------------------:
@@ -62,16 +62,16 @@ Now due to the shutdown of the cloud for the neato robots, there are three optio
 
 ### What is supported?
 
-**We would like to support all robots where an debug interface, or other controls, is accessible, but since we only have easy access to test on a D3 and D5, we can only test on those. If you have another robot, please open an discussion so we can verify that it works or add support for it!**
+**We would like to support all robots where a debug interface, or other controls, is accessible, but since we only have easy access to test on a D3 and D5, we can only test on those. If you have another robot, please open a discussion so we can verify that it works or add support for it!**
 
-As far as we know, only the D3, D4, D5, D6 and D7 has the firmware `4.5.3` and currenly the config is based on that so the robots that should work with that firmware is as follows:
+As far as we know, only the D3, D4, D5, D6 and D7 has the firmware `4.5.3` and currently the config is based on that so the robots that should work with that firmware are as follows:
 - Confirmed working: **D3, D4, D5, D6, D7**
 - Should work with some work: **D70-D85, Connected, XV-series [maybe others? please get in touch!]**
 
 The reason this works on all neato robots is because they all have the command interface, even the robots that originally don't have any wifi will still work, since it is no longer wifi robot that is connecting to the wifi, it is the ESP device. This also removes any limitations the robots wifi may have had.
 
 **Trickier robots**
-- D8 (probably D9, D10) - These robots use a compleatly different board, chip and firmware, and because the debug interface seams to be behind a password lock, this cannot be controlled directly. If you have one of these and are willing to tinker, please get in touch!
+- D8 (probably D9, D10) - These robots use a completely different board, chip and firmware, and because the debug interface seems to be behind a password lock, this cannot be controlled directly. If you have one of these and are willing to tinker, please get in touch!
 
 ### What do I need?
 - You need access to an USB port or the debug pins
@@ -83,12 +83,12 @@ The reason this works on all neato robots is because they all have the command i
 
 # Getting started!
 
-To get this up and running you will need to connect to the debug port or usb port on the robot. The XV-series robots have the usb port on the back, the rest has it in the dustbin area, making it inaccicible when using, for these robots we need to connect via the serial debug port, you would also need to do this if you are installing it internally inside the XV-series. So sadly for this repair you will need to get some extra hardware to get it up and running; however we are happy to help you out any step along the way!
+To get this up and running you will need to connect to the debug port or usb port on the robot. The XV-series robots have the usb port on the back, the rest has it in the dustbin area, making it inaccessible when using, for these robots we need to connect via the serial debug port, you would also need to do this if you are installing it internally inside the XV-series. So sadly for this repair you will need to get some extra hardware to get it up and running; however we are happy to help you out any step along the way!
 
-There is two ways of using this repair:
+There are two ways of using this repair:
 | **Without Home Assistant** | **With Home Assistant** |
 |----------------------------------------|----------------------------------------|
-| <ol><li>Flash ESP device with prebuild images</li><li>Connect to robot</li><li>Configure wifi</li><li>Make sure it works</li><li>Fix ESP device inside or outside robot</li><li>Enjoy a locally connected vacuum!</ol> | <ol><li>Setup HACS and install add-ons</li><li>Setup ESPHome</li><li>Flash ESP device with your image</li><li>Connect to robot</li><li>Add ESP device to Home Assistant</li><li>Setup Home Assistant entity and card</li><li>Make sure it works</li><li>Fix ESP device inside or outside the robot</li><li>Enjoy your locally connected vacuum!</li></ol> |
+| <ol><li>Flash ESP device with prebuilt images</li><li>Connect to robot</li><li>Configure wifi</li><li>Make sure it works</li><li>Fix ESP device inside or outside robot</li><li>Enjoy a locally connected vacuum!</ol> | <ol><li>Setup HACS and install add-ons</li><li>Setup ESPHome</li><li>Flash ESP device with your image</li><li>Connect to robot</li><li>Add ESP device to Home Assistant</li><li>Setup Home Assistant entity and card</li><li>Make sure it works</li><li>Fix ESP device inside or outside the robot</li><li>Enjoy your locally connected vacuum!</li></ol> |
 
 
 
@@ -118,11 +118,11 @@ There is two ways of using this repair:
 
 
 
-If you haven't heard of home assistant yet then this is an awesome time to learn about it! It is an open source home automation tool that puts local control and privacy first. Read more about them on their [website](https://www.home-assistant.io/) and try their [live demo](https://demo.home-assistant.io) if you want! There is a lot of great guides and information about home hassistant on youtube and their forums! They also have some amazing guides on their [site](https://www.home-assistant.io/installation/) to get an home assistant installation going. If you have any questions or problems, don't hesitate to ask for help here in the [discusstions](https://github.com/Philip2809/neato-connected/discussions) section, on our [discord](https://discord.gg/PAgwhWvyD8) or the home assistant [help](https://www.home-assistant.io/help/) page.
+If you haven't heard of home assistant yet then this is an awesome time to learn about it! It is an open source home automation tool that puts local control and privacy first. Read more about them on their [website](https://www.home-assistant.io/) and try their [live demo](https://demo.home-assistant.io) if you want! There is a lot of great guides and information about home assistant on youtube and their forums! They also have some amazing guides on their [site](https://www.home-assistant.io/installation/) to get a Home Assistant installation going. If you have any questions or problems, don't hesitate to ask for help here in the [discussions](https://github.com/Philip2809/neato-connected/discussions) section, on our [discord](https://discord.gg/PAgwhWvyD8) or the home assistant [help](https://www.home-assistant.io/help/) page.
 
-If you want the latest release, most stable code, please download the files from the [releases]() section. All links below will link to that! If you want the latest version, even if that is an beta, take the code directly from the files here on the `main` branch, or download a specific version from the pre releases.
+If you want the latest release, most stable code, please download the files from the [releases]() section. All links below will link to that! If you want the latest version, even if that is a beta, take the code directly from the files here on the `main` branch, or download a specific version from the pre releases.
 
-First of all you should start thinking about how you want to keep your robot connected, but if you don't want to commit to opening your robot or drilling an hole in the bumper yet, you can always take the bumper off and connect an esp device to the robot and just run it via Home Assistant.
+First of all you should start thinking about how you want to keep your robot connected, but if you don't want to commit to opening your robot or drilling a hole in the bumper yet, you can always take the bumper off and connect an esp device to the robot and just run it via Home Assistant.
 
 **Overview of steps:**
 1. Make sure your robot's firmware is version `4.5.3`
@@ -138,11 +138,11 @@ First of all you should start thinking about how you want to keep your robot con
 I know this might be quite a bit overwhelming, but the reason there is this many steps is to have it as detailed as possible. Once again, at any point, feel free to ask for help!
 
 ## Step 1
-The ESPHome config is designed for the latest firmware version, `4.5.3`, so you will need to check which version you are on and update if you are on an older version. If you have an neato robot that does not have support for the `4.5.3` firmware, please open an discussion or write in the discord!
+The ESPHome config is designed for the latest firmware version, `4.5.3`, so you will need to check which version you are on and update if you are on an older version. If you have a neato robot that does not have support for the `4.5.3` firmware, please open a discussion or write in the discord!
 
 To check your version you can:
 - If you app still works, check in there
-- Connect to the robot with an usb cable, at the port where the dustbin is
+- Connect to the robot with a usb cable, at the port where the dustbin is
     - on windows use [NeatoToolio](https://github.com/jdredd87/NeatoToolio) or connect via serial as with unix systems
     - on unix systems, connect to serial:
         1. `screen /dev/ttyUSB0 115200`
@@ -157,15 +157,15 @@ If your firmware version is not `4.5.3` then you will need to update to the late
 We need to install certain add-ons to the home assistant installation to use all the features of this project.
 
 ### Home assistant add-ons
-Donwload "ESPHome Device Builder" by
-1. Going to `Settings` --> `Add-ons` --> `dd-on Store` --> `Open "ESPHome Device Builder"`.
+Download "ESPHome Device Builder" by
+1. Going to `Settings` --> `Add-ons` --> `Add-on Store` --> `Open "ESPHome Device Builder"`.
 2. Select install.
 3. I would recommend to enable `Add to sidebar` and `Start on boot`. If you decide not to add it to the sidebar, you will need to open ESPHome by coming back to this page and selecting `Open web UI`.
 
 ### HACS
 If you don't already have hacs, follow their guide to set it up: https://www.hacs.xyz/docs/use/. Once you have HACS setup, open it and install the following addons:
 - `button-card`
-    - An button element to place on a dashboard with a lot of configurations to make the card look nice.
+    - A button element to place on a dashboard with a lot of configurations to make the card look nice.
 - `browser_mod`
     - Allow for a popup when clicking on settings or holding down the spot clean button.
     - It will ask you if you want to register your browser as a device, you don't need to do this for it to work!
@@ -196,21 +196,21 @@ Once back at the ESPHome main page, click the big green button in the bottom lef
 
 **The following two steps might be hard to do, feel free to ask for help in the discord or discussions.**
 
-Now, since you may be using a different board then I am, and this might get complicated. You will need to find out what platform to set. Here is the list of [available platforms](https://esphome.io/components/#supported-microcontrollers). 
+Now, since you may be using a different board than I am, and this might get complicated. You will need to find out what platform to set. Here is the list of [available platforms](https://esphome.io/components/#supported-microcontrollers). 
 
-Next, you will need to figure out which pins to use, once again this is highly dependent on your board, both based on which ones you can easily connect too, but also what is supported on your platform. In some cases, the pins labeled `TX` and `RX` cannot be used, as these are used to upload the firmware, you will need to find GPIO pins that support using using UART, on the ESP32 many of the GPIO pins can be used. There is many tutorials for the different boards, here is some common ones:
+Next, you will need to figure out which pins to use, once again this is highly dependent on your board, both based on which ones you can easily connect to, but also what is supported on your platform. In some cases, the pins labeled `TX` and `RX` cannot be used, as these are used to upload the firmware, you will need to find GPIO pins that support using UART, on the ESP32 many of the GPIO pins can be used. There are many tutorials for the different boards, here is some common ones:
 - [ESP32](https://randomnerdtutorials.com/esp32-pinout-reference-gpios/)
 - [ESP8266](https://randomnerdtutorials.com/esp8266-pinout-reference-gpios/)
 
 ## Step 4
 Now you will need to build and flash the images onto your ESP device! While in the editor, press the "Install" button in the top right, since the device is not yet setup, select "Manual download", this will build the configuration file to an image you can flash, this might take a while on a fresh system. 
 
-Once the image has been built, select to download in "Factory format", save this file on your computer and open [ESPHome Web](https://web.esphome.io/). Since this uses WebSerial you will need to use a chromium based browser. ESPHome has an amazing [guide](https://esphome.io/guides/physical_device_connection/) if this is your first time doing this, but to summerize, if you have an usb-port on your device, connect to it, if not you will need to connect to the `TX`, `RX`, `GND` and `3.3V/5V` with an TTY adapter. Then go into bootloader mode by pressing the "BOOT" button, if you don't have one, connect `GPIO0` to `GND`.
+Once the image has been built, select to download in "Factory format", save this file on your computer and open [ESPHome Web](https://web.esphome.io/). Since this uses WebSerial you will need to use a chromium based browser. ESPHome has an amazing [guide](https://esphome.io/guides/physical_device_connection/) if this is your first time doing this, but to summarize, if you have a usb-port on your device, connect to it, if not you will need to connect to the `TX`, `RX`, `GND` and `3.3V/5V` with a TTY adapter. Then go into bootloader mode by pressing the "BOOT" button, if you don't have one, connect `GPIO0` to `GND`.
 
 Once in ESPHome Web, connect your device to your computer, while going into bootloader mode, then select it in the list. Once selected, upload the firmware file you downloaded before and wait for it to finish. Once finished, it will reboot and you should see it connect to your wifi network.
 
 ## Step 5
-Now you will need to connect to the robot over it's serial debug port. 
+Now you will need to connect to the robot over its serial debug port. 
 
 To verify that everything works, either if you just want to try this out, or test what pins you can use before making a permanent installation you should take the bumper off and connect to the debug pins directly.
 ![debug-port-with-cables-annotated](./pics/d3/debug-port-with-cables-annotated.jpg)
@@ -238,30 +238,30 @@ Copy the contents of [ha-card](https://github.com/philip2809/neato-connected/rel
 
 **If you have changed the name in the ESPHome config:**
 1. Paste the content into a text editor
-2. Go to `Developer tools` --> `States` --> `In "Filter entities" seatch for "_fuel_percent"`
+2. Go to `Developer tools` --> `States` --> `In "Filter entities" search for "_fuel_percent"`
 3. There should be a result for `sensor.<ENTITY_ID>_fuel_percent`
-    - This entity id is probaly the same as the name you gave but lowercase and dashes changed for underscores.
+    - This entity id is probably the same as the name you gave but lowercase and dashes changed for underscores.
 4. Replace all instances of `neato_vacuum` with your `<ENTITY_ID>`
 
 
 ### Add the card
 1. Press the pen icon in the top right on the desired dashboard
 2. Press `Add card`
-3. Scroll to the buttom and select `Manual`
+3. Scroll to the bottom and select `Manual`
 4. Paste the contents of the card (if you changed the name, the modified one)
 
 ## Step 8
 **Before you make a permanent installation, make sure it all works via Home Assistant as you want it to!**
 
-And once you are ready for the permanent installation, you there is two ways to do it:
+And once you are ready for the permanent installation, there are two ways to do it:
 
-[Externally; by drilling a hole in the bumper](./install-externally.md) | [Internally; by connecting to the debug port using an JST-XH connector (recommended)](./install-internally.md)
+[Externally; by drilling a hole in the bumper](./install-externally.md) | [Internally; by connecting to the debug port using a JST-XH connector (recommended)](./install-internally.md)
 :-------------------------:|:-------------------------:
 ![cables-via-bumper](./pics/d3/cables-via-bumper.jpg) ![d3-install-outside](./pics/installs/d3-install-outside.png) | ![jay-jst-xh](./pics/installs/jay/2-install-JST-XH.jpg) ![jay-installed](./pics/installs/jay/4-installed-and-taped.jpg)
 
 
 ## Step 9
-Now you can enjoy your locally controllable neato vacuum cleaner! Of course there is some quirks with this repair, however we feel they are worth the ability to regain functionality.
+Now you can enjoy your locally controllable neato vacuum cleaner! Of course there are some quirks with this repair, however we feel they are worth the ability to regain functionality.
 
 Missing features or annoying workarounds:
 - Haven't found a way to tell the robot to dock via the serial interface

@@ -24,17 +24,17 @@ The pictures here are from a D3 but should be similar for others. Please read th
 
 5. Drill a hole in the bumper
 
-Bumber front | Bumber back
+Bumper front | Bumper back
 :-------------------------:|:-------------------------:
 ![bumper-front](./pics/d3/bumper-front.jpg) | ![bumper-back](./pics/d3/bumper-back.jpg)
 
 
-Debug port | Debug port with bumber 
+Debug port | Debug port with bumper 
 :-------------------------:|:-------------------------:
 ![debug-port](./pics/d3/debug-port.jpg) |  ![bumper-with-hole](./pics/d3/bumper-with-hole.jpg)
 
 
-6. Pull some cables thour the hole and connect them to the debug port
+6. Pull some cables through the hole and connect them to the debug port
 
 7. Connect the cables
 ![cables-via-bumper](./pics/d3/cables-via-bumper.jpg)
@@ -50,6 +50,6 @@ Debug port | Debug port with bumber
     |TX|RX|
     |GND|GND|
 
-10. Tape the esp to the side, but make sure the robot can still be flushed against the wall on the side. Also, make sure to put something where the cables come out to avoid them beeing squised. 
+10. Tape the esp to the side, but make sure the robot can still be flushed against the wall on the side. Also, make sure to put something where the cables come out to avoid them being squished. 
 
 ![cables-via-bumper](./pics/installs/d3-install-outside.png)

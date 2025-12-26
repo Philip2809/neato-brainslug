@@ -12,18 +12,18 @@ Conditions needed to make a ROS2, slam_toolbox cleaning possible, and they canno
 - Get info about other sensors/state
 
 
-I will need to do more experimatation on this part; but this is a command to drive forward: `SetMotor RWheelDist 3000 LWheelDist 3000 Speed 60`
+I will need to do more experimentation on this part; but this is a command to drive forward: `SetMotor RWheelDist 3000 LWheelDist 3000 Speed 60`
 
 Stop the wheels: `SetMotor LWheelDisable RWheelDisable`
 
-You can at any time can the speed by sending a new command, stopping the motors can be done as stated with the disable commands, but then you need to enable them again. A faster way would be to just set the distance to 1mm. You cannot the the values to 0, those are ignored.
+You can at any time set the speed by sending a new command, stopping the motors can be done as stated with the disable commands, but then you need to enable them again. A faster way would be to just set the distance to 1mm. You cannot set the values to 0, those are ignored.
 
-If you send a commad with a space in the begninning the robot will say:
+If you send a command with a space in the beginning the robot will say:
 ```
 Nice try, but I'm not falling for that one again!  :P
 ```
 
-I have now tested that you can send commands while reciving data and that the robot will execute them, it does do so. However I have a small problem, via esphome the `GetLdsScan` crashes my esp when the delimiter is set to the endbyte sent by the robot `\x1A`, it works when setting a line by line reading, so if the fully custom solution does come, then it would not be via esphome. Since the LDS scan takes a while to arrive, at least via the esphome console but that does however go via my ha and network, it was quite a lot faster via direct serial connection, but we would still need to queue the commands, something like like:
+I have now tested that you can send commands while receiving data and that the robot will execute them, it does do so. However I have a small problem, via esphome the `GetLdsScan` crashes my esp when the delimiter is set to the endbyte sent by the robot `\x1A`, it works when setting a line by line reading, so if the fully custom solution does come, then it would not be via esphome. Since the LDS scan takes a while to arrive, at least via the esphome console but that does however go via my ha and network, it was quite a lot faster via direct serial connection, but we would still need to queue the commands, something like:
 1. GetErr (Could maybe happen every 10th loop)
 2. GetDigitalSensors    (bumper, dustbin & pickup)
 3. GetAnalogSensors     (drop-, mag- and wall-sensor)

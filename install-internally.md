@@ -1,6 +1,6 @@
 # Install internally
 
-**Warning: before opening up the robot, make sure to open the battery compartment and remove the battery. We will include this again step in the step-by-step procedure.**
+**Warning: before opening up the robot, make sure to open the battery compartment and remove the battery. We will include this step again in the step-by-step procedure.**
 
 The pictures here are from a D5 but should be similar for others. Please read the guide fully before doing it yourself!
 
@@ -12,7 +12,7 @@ The pictures here are from a D5 but should be similar for others. Please read th
 - [One male JST-XH cable](https://www.amazon.com/dp/B0D9R3MP4G?ref=cm_sw_r_cso_cp_apan_dp_N8757APDHEV6D087T3VR&ref_=cm_sw_r_cso_cp_apan_dp_N8757APDHEV6D087T3VR&social_share=cm_sw_r_cso_cp_apan_dp_N8757APDHEV6D087T3VR&titleSource=true)
 - A soldering iron
 - 4 pieces of about 10 cm of wire
-- 4 pieces of heath shrink tubing
+- 4 pieces of heat shrink tubing
 - [4x Dupont connector and crimping tool](https://a.co/d/8DN4Z0P)
 - Electrical tape (preferably black)
 - Electrical masking tape / Kapton tape to prevent shorts
@@ -35,7 +35,7 @@ The pictures here are from a D5 but should be similar for others. Please read th
 
 7. Remove the bumper by pulling it off.
 
-8. Remove the 2 Philips screws marked yellow in the image below and open the battery compartment. Remove the battery and leave it unplugged into told to plug it back in.
+8. Remove the 2 Philips screws marked yellow in the image below and open the battery compartment. Remove the battery and leave it unplugged until told to plug it back in.
 
 9. Remove the 6 Torx screws red marked in the image below. You will need a long T10 Torx bit for that.
 ![Neato robot on its back. Screws to remove are marked](pics/installs/jay/1-removing-screws.jpg "Remove these screws")
@@ -46,7 +46,7 @@ The pictures here are from a D5 but should be similar for others. Please read th
 
 ![Neato robot normals ide up. Screws to remove are marked](pics/installs/jay/1a-removing-two-more-screws.jpg "Remove two more screws")
 
-12. Pull of the top cover by pushing the two tabs at the front out of the way.
+12. Pull off the top cover by pushing the two tabs at the front out of the way.
 
 13. Double check again that you've removed the battery before continuing. There should be no LEDs on at this point.
 
@@ -93,7 +93,7 @@ The pictures here are from a D5 but should be similar for others. Please read th
 
 
 ## Bending pins (not recommended)
-You could, instead of using an JST-XH connector bind the debug pins to allow for dupont connectors to connect.
+You could, instead of using a JST-XH connector bind the debug pins to allow for dupont connectors to connect.
 
 ![bent-pins-dupont](./pics/installs/tom/bend-pins.png)
 

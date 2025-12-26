@@ -6,11 +6,11 @@ If factory reset (by loading the factory IFS or holding the front right and righ
 
 Connecting to this network, the ip range will be `192.168.219.XXX` with the robot at `192.168.219.1`. (on my factory firmware it is at `192.168.0.1`). 
 
-An nmap scan reveals that port 4443 and port 8081 is open of the robot. (on my factory firmware it is only port 4443 that is open). I am not sure why, but running nmap seams to crash the webserver and to connect to it again I need to restart the robot.
+An nmap scan reveals that port 4443 and port 8081 are open of the robot. (on my factory firmware it is only port 4443 that is open). I am not sure why, but running nmap seems to crash the webserver and to connect to it again I need to restart the robot.
 
-I looked first at how the app connects to the robot, and had some issues when trying to use pcapdroid to decrypt the payload, I got SSL protocol not supported, I tried to connect via curl, same error. I am not exactly sure why; but after some debuggning I think it requires a TLS 1.0 handshake and modern curl/mitmproxy/python is not happy for that. Sending curl requests with `--ciphers ALL:@SECLEVEL=0` solves the issues with TLS.
+I looked first at how the app connects to the robot, and had some issues when trying to use pcapdroid to decrypt the payload, I got SSL protocol not supported, I tried to connect via curl, same error. I am not exactly sure why; but after some debugging I think it requires a TLS 1.0 handshake and modern curl/mitmproxy/python is not happy for that. Sending curl requests with `--ciphers ALL:@SECLEVEL=0` solves the issues with TLS.
 
-The endpoints important to the setup is:
+The endpoints important to the setup are:
 ```
 GET /info
 GET /wifi_networks
@@ -19,7 +19,7 @@ GET /robot/wifi_networks/new/progress
 PUT /robot/access_point/shutdown
 ```
 
-The app sends `authorization` headers but I think that it is pointless, I have just been sending random data on this header during all my testing. I will be testing to remove headers that might be unnessecery.
+The app sends `authorization` headers but I think that it is pointless, I have just been sending random data on this header during all my testing. I will be testing to remove headers that might be unnecessary.
 
 Lets look at the request body and response body.
 GET /info
@@ -38,7 +38,7 @@ GET /wifi_networks
 [
     {
         "ssid": "wifi ssid",
-        "strength": 3 // seams to be from 1-3, 3 being strongest
+        "strength": 3 // seems to be from 1-3, 3 being strongest
     }
     [...]
 ]
@@ -51,9 +51,9 @@ request:
     "name": "name to give robot",
     "password": "password of wifi to connect to",
     "server_urls": {
-        "beehive": "beehive", // .neatocloud.com will be autoapended
+        "beehive": "beehive", // .neatocloud.com will be auto-appended
         "ntp": "pool.ntp.org",
-        "nucleo": "nucleo" // .neatocloud.com will be autoapended
+        "nucleo": "nucleo" // .neatocloud.com will be auto-appended
     },
     "ssid": "ssid of wifi to connect to",
     "timezone": "Europe/Stockholm",
@@ -71,22 +71,22 @@ GET /robot/wifi_networks/new/progress
 }
 ```
 
-There seams to be 2 more endpoints:
+There seems to be 2 more endpoints:
 ```
 PUT /robot/wifi
 PUT /robot/wifi_networks/primary
 ```
 
-however I am not sure how these work, might be used by older firmware versions, havn't tried to do the setup via app then mitm it with the factory firmware yet.
+however I am not sure how these work, might be used by older firmware versions, haven't tried to do the setup via app then mitm it with the factory firmware yet.
 
 ### mitmproxy to look at data
-You will need mitmproxy 4.0.4 (other versions may also work). I would recommend downloading their binary with the correct python version bundeled from:
+You will need mitmproxy 4.0.4 (other versions may also work). I would recommend downloading their binary with the correct python version bundled from:
 https://www.mitmproxy.org/downloads/#4.0.4/
 
 Run mitmproxy with:
 `mitmproxy --listen-host 0.0.0.0 --listen-port 8080 --ssl-insecure`
 
-Open port 8080, I just open all temporarly:
+Open port 8080, I just open all temporarily:
 `iptables -I INPUT -j ACCEPT`
 
 Connect the pc running mitmproxy to the robot AP first, then connect the phone to the robot AP and set the proxy settings as follows:
@@ -95,14 +95,14 @@ Server: 192.168.219.9
 Port: 8080
 ```
 
-Of couse, check your exact ip in case you are on another firmware version or it is not working.
+Of course, check your exact ip in case you are on another firmware version or it is not working.
 
 
 ## Once connected to wifi
 
 Once connected to wifi the robot will do the following:
-1. Check internet connactivity by pinging 8.8.8.8
+1. Check internet connectivity by pinging 8.8.8.8
 2. Get NTP servers from pool and update the time
 3. Contact the "beehive" url (with `.neatocloud.com` appended)
 
-Rewriting the DNS in my router to an local openssl server to see if the robot is checking certificates gave: `SSL3 alert read:fatal:unknown CA`, meaning the cloud replacment method is not possible without removing secure boot and changing the CA list.
+Rewriting the DNS in my router to an local openssl server to see if the robot is checking certificates gave: `SSL3 alert read:fatal:unknown CA`, meaning the cloud replacement method is not possible without removing secure boot and changing the CA list.

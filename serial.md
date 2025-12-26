@@ -1,7 +1,7 @@
 
 
 ## Serial interface
-There seams to be two different serial interfaces on the robot. One you can connect via the usb port where the dustbin resides, and blocks. The other one with jumper wires or soldering. Here you can connect via a TTY adapter. 
+There seems to be two different serial interfaces on the robot. One you can connect via the usb port where the dustbin resides, and blocks. The other one with jumper wires or soldering. Here you can connect via a TTY adapter. 
 
 ### On different robots
 
@@ -31,13 +31,13 @@ The pinout looks like this:
 ![pinout on d3](./pics/d3/pinout.png)
 ![pinout connected](./pics/d3/pinout-connected.png)
 
-(The pin labled 3.3V? is a 3.3V pin)
+(The pin labeled 3.3V? is a 3.3V pin)
 
 my setup
 ![my setup](./pics/d3/pinout-tty-setup.jpg)
 
 #### D70/D75/D80/D85
-These use a compleatly different pcb and they have the serial debug strips on the left side of the chassi. 
+These use a completely different pcb and they have the serial debug strips on the left side of the chassis. 
 
 d80
 ![d80](./pics/other-robots/d80.png)
@@ -84,7 +84,7 @@ initialize_sdmmc finished. sdmmc.sdmmc_pbase=481D8000
 Booting Main Image
 ```
 
-If it just was sleeping or not fullt shut down.
+If it just was sleeping or not fully shut down.
 ```
 ARCHES Board (04.0x90c973a5)
 
@@ -143,7 +143,7 @@ TestMode - Sets TestMode on or off. Some commands can only be run in TestMode.
 Upload - Uploads new program to the robot.
 ```
 
-Now the commandline is not case-sensetive and it also checks if the string you written is part of a command or parameter for a command. If it is an only match it will "autocompleage" the command for you, if multiple matches then it will list what it could be. Thanks to this functionality I have discovered some commands that is not documented in the `Help` command:
+Now the commandline is not case-sensitive and it also checks if the string you written is part of a command or parameter for a command. If it is an only match it will "autocomplete" the command for you, if multiple matches then it will list what it could be. Thanks to this functionality I have discovered some commands that are not documented in the `Help` command:
 ```
 GetActiveServices
 GetLoggingType

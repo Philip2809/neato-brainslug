@@ -1,6 +1,6 @@
 ## All the states that exist in firmware version 3.2.0
 
-I don't expect much core functionallity has changed, so the list should be about the same for `4.5.3`, however the number have changed! Also `4.5.3` not only has an "Current UI State is" but also an "Current Robot State is", and I have included what those states probably are.
+I don't expect much core functionality has changed, so the list should be about the same for `4.5.3`, however the number have changed! Also `4.5.3` not only has a "Current UI State is" but also a "Current Robot State is", and I have included what those states probably are.
 
 
 #### Errors/Alerts
