@@ -1,0 +1,16 @@
+# Optional Diagnostics Feature
+# Adds sensors for monitoring device health and connectivity
+# Includes WiFi signal strength and uptime tracking
+
+sensor:
+  # WiFi Signal Strength
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 60s
+    entity_category: "diagnostic"
+
+  # Device Uptime
+  - platform: uptime
+    name: "Uptime"
+    update_interval: 60s
+    entity_category: "diagnostic"

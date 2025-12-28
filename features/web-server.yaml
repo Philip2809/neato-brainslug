@@ -1,0 +1,13 @@
+# Optional Web Server Feature
+# Enables a web interface to monitor and control the device
+# Access via http://[device-name].local or http://[ip-address]
+#
+# Note: OTA updates are disabled for the web server to avoid conflicts
+# with the main OTA configuration. OTA updates will continue to work
+# through the ESPHome API.
+
+web_server:
+  port: 80
+  version: 3
+  local: true
+  ota: false  # Disable web server OTA to use only ESPHome API OTA

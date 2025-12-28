@@ -1,0 +1,12 @@
+# Optional Captive Portal Feature
+# Creates a fallback WiFi access point for easy initial setup
+# Configure captive_portal_password in secrets.yaml
+
+# Create a fallback hotspot (captive portal) if WiFi connection fails
+wifi:
+  ap:
+    ssid: "${friendly_name} Fallback"
+    password: !secret captive_portal_password
+
+# Enable captive portal
+captive_portal:

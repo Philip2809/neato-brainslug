@@ -1,0 +1,11 @@
+# Standard ESP32 Board Configuration
+# Use this for regular ESP32 boards (ESP32-DevKitC, NodeMCU-32S, etc.)
+
+substitutions:
+  uart_tx: "GPIO17"
+  uart_rx: "GPIO16"
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf

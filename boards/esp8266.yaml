@@ -1,0 +1,11 @@
+# ESP8266 Board Configuration
+# Use this for ESP8266 boards (NodeMCU, Wemos D1 Mini, etc.)
+
+substitutions:
+  uart_tx: "GPIO1"
+  uart_rx: "GPIO3"
+
+esp8266:
+  board: nodemcuv2
+  framework:
+    version: recommended

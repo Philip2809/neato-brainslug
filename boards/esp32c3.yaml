@@ -1,0 +1,11 @@
+# ESP32-C3 Board Configuration
+# Use this for ESP32-C3 based boards (like ESP32-C3-DevKitM-1)
+
+substitutions:
+  uart_tx: "GPIO21"
+  uart_rx: "GPIO20"
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf

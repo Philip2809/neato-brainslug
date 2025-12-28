@@ -1,0 +1,51 @@
+# Optional Debug Tools Feature
+# Adds text input and buttons for testing Neato commands
+
+text:
+  - platform: template
+    name: "DEBUG: Command Input"
+    id: debug_command
+    optimistic: true
+    initial_value: "GetHelp"
+    mode: text
+    entity_category: "diagnostic"
+
+button:
+  - platform: template
+    name: "DEBUG: Send Command"
+    on_press:
+      - uart.write: !lambda |-
+          std::string cmd = id(debug_command).state;
+          if (cmd.empty()) {
+            ESP_LOGW("debug", "No command entered");
+            return {};
+          }
+          if (cmd.back() != '\n') cmd += "\n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+    entity_category: "diagnostic"
+
+  - platform: template
+    name: "DEBUG: Quick Test"
+    on_press:
+      - uart.write: "GetErr \n"
+      - delay: 500ms
+      - uart.write: "GetState \n"
+      - delay: 500ms
+      - uart.write: "GetCharger \n"
+      - delay: 500ms
+      - uart.write: "GetVersion \n"
+      - delay: 500ms
+      - uart.write: "GetUserSettings \n"
+      - delay: 500ms
+      - uart.write: "GetWarranty \n"
+      - delay: 500ms
+      - uart.write: "TestMode \n"
+      - delay: 500ms
+      - uart.write: "GetButtons \n"
+      - delay: 500ms
+      - uart.write: "GetMotors \n"
+      - delay: 500ms
+      - uart.write: "GetAnalogSensors \n"
+      - delay: 500ms
+      - uart.write: "GetDigitalSensors \n"
+    entity_category: "diagnostic"

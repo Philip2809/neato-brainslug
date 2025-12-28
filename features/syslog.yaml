@@ -1,0 +1,17 @@
+# Optional Syslog Feature
+# Sends ESP logs to a remote syslog server (e.g., Loki/Promtail)
+# Configure syslog_server in secrets.yaml
+
+# Required for syslog
+udp:
+  id: udp_component
+  addresses: !secret syslog_server
+
+syslog:
+  udp_id: udp_component
+  port: 514
+  strip: true
+
+# Disable serial logging when using syslog
+logger:
+  baud_rate: 0

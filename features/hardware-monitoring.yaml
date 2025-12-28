@@ -1,0 +1,38 @@
+# Optional Hardware Monitoring Feature
+# Adds ESP32/ESP8266 hardware health sensors to Home Assistant
+# Monitors memory, CPU, and performance metrics
+
+debug:
+  update_interval: 30s
+
+sensor:
+  # Free heap memory
+  - platform: debug
+    free:
+      name: "Free Heap"
+      entity_category: "diagnostic"
+
+  # Largest free memory block
+  - platform: debug
+    block:
+      name: "Largest Free Block"
+      entity_category: "diagnostic"
+
+  # Main loop execution time
+  - platform: debug
+    loop_time:
+      name: "Loop Time"
+      entity_category: "diagnostic"
+
+text_sensor:
+  # Device information (chip model, cores, etc.)
+  - platform: debug
+    device:
+      name: "Device Info"
+      entity_category: "diagnostic"
+
+  # Reset reason
+  - platform: debug
+    reset_reason:
+      name: "Reset Reason"
+      entity_category: "diagnostic"
