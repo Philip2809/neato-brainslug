@@ -8,7 +8,7 @@ variables:
     not promised. Please try to keep the versions the same, and check the github
     for updates!
   project: philip2809.neato-connected
-  version: "1.1.1"
+  version: "1.2-b.3"
 cards:
   - type: custom:button-card
     variables:
@@ -94,6 +94,14 @@ cards:
                   ? 'block'
                   : 'none';
               ]]]
+        manual_drive:
+          - position: absolute
+          - bottom: 8px
+          - right: 8px
+          - padding: 4px
+          - border-radius: 8px
+          - height: 15%
+          - width: 10%
     custom_fields:
       battery: |-
         [[[ 
@@ -105,9 +113,139 @@ cards:
           if (states[`binary_sensor.${variables.robot_id}_ext_power_present`]?.state === 'on') {
             return 'DOCKED';
           } else {
-            return 'sdfsdf';
+            return '';
           }
         ]]]
+      manual_drive:
+        card:
+          type: custom:button-card
+          icon: mdi:steering
+          size: 100%
+          styles:
+            card:
+              - background-color: rgba(255,255,255,0.2)
+          tap_action:
+            action: fire-dom-event
+            browser_mod:
+              service: browser_mod.popup
+              data:
+                title: Manual driving
+                size: normal
+                content:
+                  type: vertical-stack
+                  cards:
+                    - type: horizontal-stack
+                      cards:
+                        - type: custom:button-card
+                          entity: button.neato_vacuum_control_manual_start_vacuum
+                          name: Start Vacuum
+                          press_action:
+                            action: call-service
+                            service: button.press
+                            target:
+                              entity_id: button.neato_vacuum_control_manual_start_vacuum
+                        - type: custom:button-card
+                          entity: button.neato_vacuum_control_drive_forward
+                          name: Forward
+                          press_action:
+                            action: call-service
+                            service: button.press
+                            target:
+                              entity_id: button.neato_vacuum_control_drive_forward
+                        - type: custom:button-card
+                          entity: button.neato_vacuum_control_manual_stop_vacuum
+                          name: Stop Vacuum
+                          press_action:
+                            action: call-service
+                            service: button.press
+                            target:
+                              entity_id: button.neato_vacuum_control_manual_stop_vacuum
+                    - type: horizontal-stack
+                      cards:
+                        - type: custom:button-card
+                          entity: button.neato_vacuum_control_drive_left
+                          name: Left
+                          press_action:
+                            action: call-service
+                            service: button.press
+                            target:
+                              entity_id: button.neato_vacuum_control_drive_left
+                        - type: custom:button-card
+                          entity: button.neato_vacuum_control_drive_backward
+                          name: Backward
+                          press_action:
+                            action: call-service
+                            service: button.press
+                            target:
+                              entity_id: button.neato_vacuum_control_drive_backward
+                        - type: custom:button-card
+                          entity: button.neato_vacuum_control_drive_right
+                          name: Right
+                          press_action:
+                            action: call-service
+                            service: button.press
+                            target:
+                              entity_id: button.neato_vacuum_control_drive_right
+                    - type: horizontal-stack
+                      cards:
+                        - type: custom:button-card
+                          entity: button.neato_vacuum_control_manual_start_brush
+                          name: Start brush
+                          press_action:
+                            action: call-service
+                            service: button.press
+                            target:
+                              entity_id: button.neato_vacuum_control_manual_start_brush
+                        - type: custom:button-card
+                          name: Settings
+                          icon: mdi:cog
+                          tap_action:
+                            action: fire-dom-event
+                            browser_mod:
+                              service: browser_mod.popup
+                              data:
+                                title: More options
+                                size: normal
+                                content:
+                                  type: vertical-stack
+                                  cards:
+                                    - type: horizontal-stack
+                                      cards:
+                                        - show_name: true
+                                          show_icon: true
+                                          entity: >-
+                                            [[[ return `switch.${variables.robot_id}_test_mode`;
+                                            ]]]
+                                          name: Test Mode
+                                          type: button
+                                    - type: entities
+                                      entities:
+                                        - entity: number.neato_vacuum_control_set_brush_speed
+                                          name: Brush speed
+                                    - type: entities
+                                      entities:
+                                        - entity: number.neato_vacuum_control_set_motor_distance
+                                          name: Distance
+                                    - type: entities
+                                      entities:
+                                        - entity: number.neato_vacuum_control_set_motor_speed
+                                          name: Speed
+                                    - type: entities
+                                      entities:
+                                        - entity: number.neato_vacuum_control_set_motor_turn_degrees
+                                          name: Turn degrees
+                                    - type: entities
+                                      entities:
+                                        - entity: number.neato_vacuum_control_set_vacuum_speed_in_percent
+                                          name: Vacuum speed
+                        - type: custom:button-card
+                          entity: button.neato_vacuum_control_manual_stop_brush
+                          name: Stop brush
+                          press_action:
+                            action: call-service
+                            service: button.press
+                            target:
+                              entity_id: button.neato_vacuum_control_manual_stop_brush
     extra_styles: |
       @keyframes pulseGreen {
         0%   { box-shadow: 0 0 5px 0    rgba(124, 252, 0, 0.6); }

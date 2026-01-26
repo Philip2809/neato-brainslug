@@ -25,10 +25,10 @@ esphome:
 
 #   Combatability between esphome config and this card is ensured as long as the
 #   major version's match, for relase candicates, betas etc (indicated by X.X-a/b/rc.X), the version
-#   has to match perfectly otherwise compatability is not promised. 
+#   has to match perfectly otherwise compatability is not promised.
 #
 #   Please try to keep the versions the same, and check the github for updates!
-  project: 
+  project:
     name: philip2809.neato-connected
     version: "1.1.1"
 
@@ -64,24 +64,24 @@ script:
 
   - id: get_all_data
     mode: queued
-    then: 
-      - uart.write: "GetErr \n"  
-      - delay: 50ms  
-      - uart.write: "GetState \n"    
-      - delay: 50ms  
-      - uart.write: "GetCharger \n"    
-      - delay: 50ms  
+    then:
+      - uart.write: "GetErr \n"
+      - delay: 50ms
+      - uart.write: "GetState \n"
+      - delay: 50ms
+      - uart.write: "GetCharger \n"
+      - delay: 50ms
       - uart.write: "GetVersion \n"    
       - delay: 50ms  
-      - uart.write: "GetUserSettings \n"  
+      - uart.write: "GetUserSettings \n"
       - delay: 50ms
       - uart.write: "GetWarranty \n"
-      - delay: 50ms  
+      - delay: 50ms
       - uart.write: "TestMode \n"
-  
+
   - id: inital_data_get # when the robot has booted, run this inital fetch after 5 seconds of being able to send commands, the 5 sec needed to the robot can calculate battery levet etc.
     mode: queued
-    then: 
+    then:
       - delay: 5sec
       - script.execute: get_all_data
 
@@ -103,7 +103,7 @@ script:
       - uart.write: "SetSystemMode PowerCycle \n"
 
   - id: cleaning_stopped
-    then: 
+    then:
       - lambda: !lambda |-
           uint64_t now_ts = id(homeassistant_time).now().timestamp;
           uint64_t start_ts = id(g_last_cleaning_start_time);
@@ -142,7 +142,7 @@ interval:
       - uart.write: "GetErr \n"
       - uart.write: "GetState \n"
   - interval: 2min
-    then: 
+    then:
       - uart.write: "GetCharger \n"
 
 api:
@@ -185,6 +185,7 @@ wifi:
   password: !secret wifi_password
   # If your router sets another TLD for local devices, specify that here
   #domain: .<whatever you are using, e.g. lan>
+  use_address: <your-esp-ip>
 
 logger:
   baud_rate: 0
@@ -855,6 +856,61 @@ number:
     name: Spot Clean Height
     optimistic: true
 
+  # --- Manual Control ---
+  - platform: template
+    id: distance
+    min_value: 1
+    max_value: 8000
+    initial_value: 200
+    step: 1
+    unit_of_measurement: mm
+    name: Control Set Motor Distance
+    optimistic: true
+
+  - platform: template
+    id: speed
+    min_value: 1
+    max_value: 350
+    initial_value: 150
+    step: 1
+    unit_of_measurement: mm
+    mode: SLIDER
+    name: Control Set Motor Speed
+    optimistic: true
+
+  - platform: template
+    id: turn_degrees
+    min_value: 0
+    max_value: 180
+    initial_value: 20
+    step: 1
+    unit_of_measurement: degree
+    mode: SLIDER
+    name: Control Set Motor Turn Degrees
+    optimistic: true
+
+  - platform: template
+    id: vacuum_speed
+    min_value: 0
+    max_value: 100
+    initial_value: 75
+    step: 1
+    unit_of_measurement: percent
+    mode: SLIDER
+    name: Control Set Vacuum speed in percent
+    optimistic: true
+
+  - platform: template
+    id: brush_speed
+    min_value: 0
+    max_value: 1000
+    initial_value: 1000
+    step: 1
+    unit_of_measurement: rpm
+    mode: SLIDER
+    name: Control Set Brush speed
+    optimistic: true
+
 
 select:
   - platform: template
@@ -901,6 +957,104 @@ button:
             return std::vector<uint8_t>(cmd.begin(), cmd.end());
 
   - platform: template
+    name: "Control Drive Forward"
+    icon: mdi:arrow-up-bold-box
+    on_press:
+      then:
+        - uart.write: !lambda |-
+            // Convert numbers to integers
+            int s = (int) id(speed).state;
+            int d = (int) id(distance).state;
+
+            std::string cmd = "SetMotor LWheelDist " + std::to_string(d) + " RWheelDist " + std::to_string(d) + " Speed " + std::to_string(s) + "\n";
+            return std::vector<uint8_t>(cmd.begin(), cmd.end());
+
+  - platform: template
+    name: "Control Drive Backward"
+    icon: mdi:arrow-down-bold-box
+    on_press:
+      then:
+        - uart.write: !lambda |-
+            // Convert numbers to integers
+            int s = (int) id(speed).state;
+            int d = (int) id(distance).state;
+
+            std::string cmd = "SetMotor LWheelDist -" + std::to_string(d) + " RWheelDist -" + std::to_string(d) + " Speed " + std::to_string(s) + "\n";
+            return std::vector<uint8_t>(cmd.begin(), cmd.end());
+
+  - platform: template
+    name: "Control Drive Left"
+    icon: mdi:arrow-left-bold-box
+    on_press:
+      then:
+        - uart.write: !lambda |-
+            // Convert numbers to integers
+            int s = (int) id(speed).state;
+            int d = (int) id(turn_degrees).state;
+
+            std::string cmd = "SetMotor LWheelDist -" + std::to_string(d*2) + " RWheelDist " + std::to_string(d*2) + " Speed " + std::to_string(s) + "\n";
+            return std::vector<uint8_t>(cmd.begin(), cmd.end());
+
+  - platform: template
+    name: "Control Drive Right"
+    icon: mdi:arrow-right-bold-box
+    on_press:
+      then:
+        - uart.write: !lambda |-
+            // Convert numbers to integers
+            int s = (int) id(speed).state;
+            int d = (int) id(turn_degrees).state;
+
+            std::string cmd = "SetMotor LWheelDist " + std::to_string(d*2) + " RWheelDist -" + std::to_string(d*2) + " Speed " + std::to_string(s) + "\n";
+            return std::vector<uint8_t>(cmd.begin(), cmd.end());
+
+  - platform: template
+    name: "Control Manual Start Brush"
+    icon: mdi:broom
+    on_press:
+      then:
+        - uart.write: !lambda |-
+            // Convert numbers to integers
+            int s = (int) id(brush_speed).state;
+
+            std::string cmd = "SetMotor Brush rpm " + std::to_string(s) + "\n";
+            return std::vector<uint8_t>(cmd.begin(), cmd.end());
+
+  - platform: template
+    name: "Control Manual Stop Brush"
+    icon: mdi:brush-off
+    on_press:
+      then:
+        - uart.write: !lambda |-
+
+            std::string cmd = "SetMotor Brush rpm 0\n";
+            return std::vector<uint8_t>(cmd.begin(), cmd.end());
+
+  - platform: template
+    name: "Control Manual Start Vacuum"
+    icon: mdi:vacuum
+    on_press:
+      then:
+        - uart.write: !lambda |-
+            // Convert numbers to integers
+            int s = (int) id(vacuum_speed).state;
+
+            std::string cmd = "SetMotor VacuumSpeed " + std::to_string(s) + " VacuumOn\n";
+            return std::vector<uint8_t>(cmd.begin(), cmd.end());
+
+  - platform: template
+    name: "Control Manual Stop Vacuum"
+    icon: mdi:vacuum-outline
+    on_press:
+      then:
+        - uart.write: !lambda |-
+            // Convert numbers to integers
+            int s = (int) id(vacuum_speed).state;
+
+            std::string cmd = "SetMotor VacuumSpeed " + std::to_string(s) + " VacuumOff\n";
+            return std::vector<uint8_t>(cmd.begin(), cmd.end());
+
+  - platform: template
     name: "Stop Cleaning"
     icon: mdi:stop
     on_press:
@@ -938,13 +1092,13 @@ button:
     name: "Locate Robot"
     icon: mdi:volume-high
     on_press:
-      - uart.write: "PlaySound SoundId 20 \n"  
+      - uart.write: "PlaySound SoundId 20 \n"
 
   - platform: template
     name: "Update status"
     icon: mdi:refresh
     on_press:
-      - script.execute: get_all_data 
+      - script.execute: get_all_data
     entity_category: "diagnostic"
 
   - platform: template
