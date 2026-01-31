@@ -4,7 +4,7 @@
       state: "{% set robot_id = 'neato_vacuum' %}
         {% set ui_state = states('sensor.' ~ robot_id ~ '_ui_state') %}
         {% set error_state = states('sensor.' ~ robot_id ~ '_robot_error') %}
-        {% if is_state('binary_sensor.neato_1_ext_power_present', 'on') %}
+        {% if is_state('binary_sensor.' ~ robot_id ~ '_ext_power_present', 'on') %}
             docked
         {% elif 'STATE_IDLE' or 'STATE_STANDBY' in ui_state %}
             idle

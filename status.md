@@ -16,6 +16,8 @@
     - There might be limitations on how good this can be, relying on a serial interface, how fast commands can happen, etc
     - Would work with a fully custom-made robot
 
+### Version 1
+
 #### Version 1.2 - in beta
 - Add support for Connected, D70-D85, XV-series
 - Event based commands, return to dock and manual driving for D3-D7
@@ -35,3 +37,9 @@
 #### Version 1.4 - planned
 - Translations
 - Use esphome package stuff to fetch from github directly
+
+
+### Version 2
+
+#### Version 2.0 - in dev
+The first version of version 2, will be the latest version of version 1 but will also be sending all the data to a ROS2 server to do SLAM that then can give commands to stop and move the robot

@@ -1,0 +1,354 @@
+# THIS IS A BETA VERSION! IT MAY BE UNSABLE OR NOT WORKING, FOR THE LATEST PLEASE DOWNLOAD FROM RELEASES!
+type: vertical-stack
+variables:
+  NOTE: >
+    Combatability between esphome config and this card is ensured as long as the
+    major version's match, for relase candicates, betas etc (indicated by
+    X.X-a/b/rc.X), the version has to match perfectly otherwise compatability is
+    not promised. Please try to keep the versions the same, and check the github
+    for updates!
+  project: philip2809.neato-connected
+  version: "1.2-b.5"
+cards:
+  - type: custom:button-card
+    variables:
+      robot_id: neato_vacuum
+    icon: mdi:robot-vacuum-variant
+    entity: "[[[ return `sensor.${variables.robot_id}_robot_error`; ]]]"
+    size: 50%
+    color_type: icon
+    tap_action:
+      action: none
+    hold_action:
+      action: none
+    double_tap_action:
+      action: none
+    name: |
+      [[[ 
+        const uiState = states[`sensor.${variables.robot_id}_ui_state`]?.state || '';
+        return uiState
+      ]]]
+    styles:
+      icon:
+        - color: |
+            [[[ 
+              const uiState = states[`sensor.${variables.robot_id}_ui_state`]?.state || '';
+              if (uiState === "Starting...") return '#edb926';
+              if (uiState === "Shutting down...") return 'gray';
+
+              const err = states[`sensor.${variables.robot_id}_robot_error`]?.state || '';
+              if (err !== "unknown") return '#950606';
+              return '#00cc00';
+            ]]]
+      card:
+        - border-radius: 20px
+        - display: flex
+        - justify-content: center
+        - align-items: center
+        - margin: 0 auto
+        - position: relative
+      custom_fields:
+        battery:
+          - position: absolute
+          - top: 8px
+          - right: 8px
+          - padding: 4px 8px
+          - border-radius: 8px
+          - font-weight: bold
+          - animation: |
+              [[[ 
+                if (states[`binary_sensor.${variables.robot_id}_charging_active`]?.state !== 'on') return '';
+                const pct = Number(states[`sensor.${variables.robot_id}_fuel_percent`]?.state);
+                return pct > 35 ? 'pulseGreen 3s infinite' : 'pulseOrange 3s infinite';
+              ]]]
+          - background-color: |
+              [[[ 
+                const pct = Number(states[`sensor.${variables.robot_id}_fuel_percent`]?.state);
+                return pct > 35 ? 'rgb(124, 252, 0)' : 'rgb(255, 140, 0)';
+              ]]]
+          - color: black
+        dock:
+          - position: absolute
+          - top: 8px
+          - left: 8px
+          - padding: 4px
+          - border-radius: 8px
+          - background-color: rgba(255,255,255,0.2)
+          - display: |
+              [[[ 
+                return states[`binary_sensor.${variables.robot_id}_ext_power_present`]?.state === 'on'
+                  ? 'block'
+                  : 'none';
+              ]]]
+    custom_fields:
+      battery: |-
+        [[[ 
+          const v = states[`sensor.${variables.robot_id}_fuel_percent`]?.state;
+          return (v ?? '0') + '%';
+        ]]]
+      dock: |
+        [[[ 
+          if (states[`binary_sensor.${variables.robot_id}_ext_power_present`]?.state === 'on') {
+            return 'DOCKED';
+          } else {
+            return '';
+          }
+        ]]]
+    extra_styles: |
+      @keyframes pulseGreen {
+        0%   { box-shadow: 0 0 5px 0    rgba(124, 252, 0, 0.6); }
+        50%  { box-shadow: 0 0 20px 6px rgba(124, 252, 0, 1.0); }
+        100% { box-shadow: 0 0 5px 0    rgba(124, 252, 0, 0.6); }
+      }
+      @keyframes pulseOrange {
+        0%   { box-shadow: 0 0 5px 0    rgba(255, 140, 0, 0.6); }
+        50%  { box-shadow: 0 0 20px 6px rgba(255, 140, 0, 1.0); }
+        100% { box-shadow: 0 0 5px 0    rgba(255, 140, 0, 0.6); }
+      }
+  - type: vertical-stack
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: custom:button-card
+            variables:
+              robot_id: neato_vacuum
+            show_icon: false
+            entity: "[[[ return `sensor.${variables.robot_id}_robot_error`; ]]]"
+            show_state: false
+            styles:
+              card:
+                - border-color: |
+                    [[[ 
+                      const err = states[`sensor.${variables.robot_id}_robot_error`]?.state || '';
+                      return err === "unknown" ? "" : "#950606"; 
+                    ]]]
+            name: |
+              [[[ 
+                const err = states[`sensor.${variables.robot_id}_robot_error`]?.state || '';
+                return err === "unknown" ? "No errors" : err; 
+              ]]]
+  - type: horizontal-stack
+    cards:
+      - type: custom:button-card
+        variables:
+          robot_id: neato_vacuum
+        entity: "[[[ return `button.${variables.robot_id}_house_clean`; ]]]"
+        name: Clean
+        tap_action:
+          action: toggle
+      - type: custom:button-card
+        variables:
+          robot_id: neato_vacuum
+        entity: "[[[ return `button.${variables.robot_id}_resume_cleaning`; ]]]"
+        name: Resume
+        tap_action:
+          action: toggle
+      - type: custom:button-card
+        variables:
+          robot_id: neato_vacuum
+        entity: "[[[ return `button.${variables.robot_id}_pause_cleaning`; ]]]"
+        name: Pause
+        tap_action:
+          action: toggle
+      - type: custom:button-card
+        variables:
+          robot_id: neato_vacuum
+        entity: "[[[ return `button.${variables.robot_id}_spot_clean`; ]]]"
+        name: Spot Clean
+        tap_action:
+          action: toggle
+        hold_action:
+          action: fire-dom-event
+          browser_mod:
+            service: browser_mod.popup
+            data:
+              title: Spot Clean - Height and Width
+              size: normal
+              content:
+                type: vertical-stack
+                cards:
+                  - type: entities
+                    entities:
+                      - entity: number.neato_vacuum_spot_clean_height
+                        name: Height
+                        icon: mdi:arrow-up-down
+                      - entity: number.neato_vacuum_spot_clean_width
+                        name: Width
+                        icon: mdi:arrow-left-right
+                  - type: custom:button-card
+                    size: 20%
+                    name: Start Spot Cleaning
+                    entity: button.neato_vacuum_spot_clean_height_width
+                    tap_action:
+                      action: toggle
+  - type: horizontal-stack
+    cards:
+      - type: custom:button-card
+        variables:
+          robot_id: neato_vacuum
+        entity: "[[[ return `button.${variables.robot_id}_stop_cleaning`; ]]]"
+        name: STOP
+        tap_action:
+          action: toggle
+      - type: custom:button-card
+        variables:
+          robot_id: neato_vacuum
+        entity: "[[[ return `button.${variables.robot_id}_locate_robot`; ]]]"
+        name: Locate
+        tap_action:
+          action: toggle
+      - type: custom:button-card
+        entity: button.neato_vacuum_send_to_start
+        name: Send to start
+        tap_action:
+          action: toggle
+      - type: custom:button-card
+        variables:
+          robot_id: neato_vacuum
+        name: Settings
+        icon: mdi:cog
+        tap_action:
+          action: fire-dom-event
+          browser_mod:
+            service: browser_mod.popup
+            data:
+              title: More options
+              size: normal
+              content:
+                type: vertical-stack
+                cards:
+                  - type: horizontal-stack
+                    cards:
+                      - show_name: true
+                        show_icon: true
+                        entity: >-
+                          [[[ return `switch.${variables.robot_id}_eco_mode`;
+                          ]]]
+                        name: ECO Mode
+                        type: button
+                      - show_name: true
+                        show_icon: true
+                        entity: >-
+                          [[[ return `switch.${variables.robot_id}_test_mode`;
+                          ]]]
+                        name: Test Mode
+                        type: button
+                      - entity: >-
+                          [[[ return
+                          `button.${variables.robot_id}_update_status`; ]]]
+                        name: Fetch status
+                        show_icon: true
+                        type: button
+                        tap_action:
+                          action: toggle
+                      - entity: >-
+                          [[[ return
+                          `button.${variables.robot_id}_clear_errors`; ]]]
+                        name: Clear Errors
+                        show_icon: true
+                        type: button
+                        tap_action:
+                          action: toggle
+                  - type: entities
+                    entities:
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_play_extra_sounds`; ]]]
+                        name: Play extra sounds
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_click_sounds`; ]]]
+                        name: Click Sounds
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_melody_sounds`; ]]]
+                        name: Melody Sounds
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_warning_sounds`; ]]]
+                        name: Warning Sounds
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_bin_full_detect`; ]]]
+                        name: Bin Full Detect
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_autoshutdown`; ]]]
+                        name: Auto Shutdown
+                      - entity: "[[[ return `switch.${variables.robot_id}_led`; ]]]"
+                        name: LED
+                      - entity: >-
+                          [[[ return `switch.${variables.robot_id}_stealthled`;
+                          ]]]
+                        name: Stealth Led
+                      - entity: >-
+                          [[[ return `switch.${variables.robot_id}_wall_enable`;
+                          ]]]
+                        name: Wall Follower
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_intenseclean`; ]]]
+                        name: Intense Clean
+                      - entity: "[[[ return `switch.${variables.robot_id}_wifi`; ]]]"
+                        name: WiFi
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_robot_schedule`; ]]]
+                        name: Robot Schedule
+                    state_color: false
+                    show_header_toggle: false
+                  - type: entities
+                    entities:
+                      - entity: "[[[ return `sensor.${variables.robot_id}_model`;]]]"
+                        name: Model
+                      - entity: >-
+                          [[[ return
+                          `sensor.${variables.robot_id}_serial_number`;]]]
+                        name: S/N
+                      - entity: "[[[ return `sensor.${variables.robot_id}_software`;]]]"
+                        name: Software
+                      - entity: "[[[ return `sensor.${variables.robot_id}_nbs_time`;]]]"
+                        name: Robot Time
+                      - entity: >-
+                          [[[ return
+                          `sensor.${variables.robot_id}_battery_voltage_v`;]]]
+                        name: Battery Voltage
+                      - entity: >-
+                          [[[ return
+                          `sensor.${variables.robot_id}_battery_temp_c_avg`;]]]
+                        name: Battery Temp (avg)
+                      - entity: >-
+                          [[[ return
+                          `sensor.${variables.robot_id}_charger_mah`;]]]
+                        name: Charging
+                      - entity: >-
+                          [[[ return
+                          `sensor.${variables.robot_id}_discharge_mah`;]]]
+                        name: Discharging
+                  - type: horizontal-stack
+                    cards:
+                      - show_name: true
+                        show_icon: true
+                        entity: "[[[ return `button.${variables.robot_id}_shutdown`;]]]"
+                        type: button
+                        name: Power Off
+                        tap_action:
+                          action: toggle
+                      - show_name: true
+                        show_icon: true
+                        entity: >-
+                          [[[ return
+                          `button.${variables.robot_id}_powercycle`;]]]
+                        name: Reboot Robot
+                        type: button
+                        tap_action:
+                          action: toggle
+                      - show_name: true
+                        show_icon: true
+                        type: button
+                        entity: >-
+                          [[[ return
+                          `button.${variables.robot_id}_reboot_esp`;]]]
+                        name: Reboot ESP
+                        tap_action:
+                          action: toggle

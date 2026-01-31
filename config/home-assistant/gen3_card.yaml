@@ -8,7 +8,7 @@ variables:
     not promised. Please try to keep the versions the same, and check the github
     for updates!
   project: philip2809.neato-connected
-  version: "1.2-b.3"
+  version: "1.2-b.5"
 cards:
   - type: custom:button-card
     variables:
@@ -480,11 +480,12 @@ cards:
                           action: toggle
                       - entity: >-
                           [[[ return
-                          `binary_sensor.${variables.robot_id}_usb_connected`;
-                          ]]]
-                        name: USB
+                          `button.${variables.robot_id}_clear_errors`; ]]]
+                        name: Clear Errors
                         show_icon: true
                         type: button
+                        tap_action:
+                          action: toggle
                   - type: entities
                     entities:
                       - entity: >-
@@ -493,16 +494,12 @@ cards:
                         name: Navigation Mode
                       - entity: >-
                           [[[ return
-                          `switch.${variables.robot_id}_intenseclean`; ]]]
-                        name: Intense Clean
-                      - entity: "[[[ return `switch.${variables.robot_id}_led`; ]]]"
-                        name: LED
-                      - entity: "[[[ return `switch.${variables.robot_id}_wifi`; ]]]"
-                        name: WiFi
+                          `switch.${variables.robot_id}_play_extra_sounds`; ]]]
+                        name: Play extra sounds
                       - entity: >-
-                          [[[ return `switch.${variables.robot_id}_wall_enable`;
-                          ]]]
-                        name: Wall Follower
+                          [[[ return
+                          `switch.${variables.robot_id}_click_sounds`; ]]]
+                        name: Click Sounds
                       - entity: >-
                           [[[ return
                           `switch.${variables.robot_id}_melody_sounds`; ]]]
@@ -513,16 +510,20 @@ cards:
                         name: Warning Sounds
                       - entity: >-
                           [[[ return
-                          `switch.${variables.robot_id}_click_sounds`; ]]]
-                        name: Click Sounds
-                      - entity: >-
-                          [[[ return
                           `switch.${variables.robot_id}_bin_full_detect`; ]]]
                         name: Bin Full Detect
+                      - entity: "[[[ return `switch.${variables.robot_id}_led`; ]]]"
+                        name: LED
                       - entity: >-
-                          [[[ return `switch.${variables.robot_id}_schedule`;
+                          [[[ return `switch.${variables.robot_id}_wall_enable`;
                           ]]]
-                        name: Schedule
+                        name: Wall Follower
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_intenseclean`; ]]]
+                        name: Intense Clean
+                      - entity: "[[[ return `switch.${variables.robot_id}_wifi`; ]]]"
+                        name: WiFi
                     state_color: false
                     show_header_toggle: false
                   - type: entities
@@ -533,9 +534,9 @@ cards:
                           [[[ return
                           `sensor.${variables.robot_id}_serial_number`;]]]
                         name: S/N
-                      - entity: >-
-                          [[[ return
-                          `sensor.${variables.robot_id}_time_local`;]]]
+                      - entity: "[[[ return `sensor.${variables.robot_id}_software`;]]]"
+                        name: Software
+                      - entity: "[[[ return `sensor.${variables.robot_id}_nbs_time`;]]]"
                         name: Robot Time
                       - entity: >-
                           [[[ return

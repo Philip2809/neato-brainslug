@@ -893,7 +893,7 @@ button:
 
   - platform: template
     name: "Send to start"
-    icon: mdi:house
+    icon: mdi:home
     on_press:
       - uart.write: "SetButton down \n"
       - delay: 1250ms
