@@ -18,7 +18,7 @@
             error
         {% endif %}"
       attributes:
-        alert: "{{ states('sensor.neato_vaccum_robot_alert') }}"
+        alert: "{{ states('sensor.neato_vacuum_robot_alert') }}"
         error: "{{ states('sensor.neato_vacuum_robot_error') }}"
       start:
         service: button.press
