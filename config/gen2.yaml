@@ -14,12 +14,12 @@ substitutions:
   uart_tx: <SET BASED ON YOUR DEVICE>
   uart_rx: <SET BASED ON YOUR DEVICE>
   comment: "" # If you want to write a comment about this vacuum, do so here. e.g. "Downstairs garage vacuum"
-
+  
   infointerval: 2sec
   chargerinterval: 2min
 
   # ---- Version and robot type ----
-  version: "1.2-b.5" # THIS IS A BETA VERSION!
+  version: "1.2-b.6" # THIS IS A BETA VERSION!
   type: "gen2"
   buildinfo: "${version}-[${uart_tx}/${uart_rx}]"
   # --------------------------------
@@ -52,18 +52,32 @@ wifi:
   # If you are having issues with the dns or are 100% this will be the ip, you can spesify that here
   #use_address: 192.168.205.199
 
+# If your ESP board has an oboard LED that you want to control, uncomment below
+#light:
+#  - platform: esp32_rmt_led_strip
+#    id: onboard_rgb
+#    name: "Onboard RGB LED"
+#    pin: GPIO16       # ← replace XX with the correct GPIO from your board
+#    num_leds: 1
+#    chipset: WS2812
+#    rgb_order: GRB
+#    restore_mode: ALWAYS_OFF
+
 captive_portal:
+
 
 esphome:
   name: neato-vacuum # If you want another name, change it here, remeber to replace it in the ha-card.yaml!
   name_add_mac_suffix: False # If you have multiple deivces and don't change the names you can also enable this! (Used for the prebuilt images)
 ##############################################################################################################################
 
+
 #   Combatability between esphome config and this card is ensured as long as the
 #   minor version's match, for relase candicates, betas etc (indicated by X.X-a/b/rc.X), the version
 #   has to match perfectly otherwise compatability is not promised. 
 #
 #   Please try to keep the versions the same, and check the github for updates!
+
   project: 
     name: philip2809.neato-connected
     version: ${buildinfo}
@@ -71,6 +85,11 @@ esphome:
   comment: "${type}|${buildinfo}|${comment}"
 
   on_boot:
+# If your ESP board has an oboard LED that you want to control, uncomment below
+#    - priority: 800
+#      then:
+#        - light.turn_off: onboard_rgb
+
     - priority: 600
       then:
         - lambda: !lambda |-
@@ -155,8 +174,11 @@ script:
       - delay: 50ms
       - uart.write: "SetSystemMode \n"
       - delay: 50ms  
-      - uart.write: "GetVersion \n"    
-  
+      - uart.write: "GetMotor \n"    
+      - delay: 50ms  
+
+      - uart.write: "GetVersion \n" 
+         
   - id: initial_data_get # when the robot has booted, run this initial fetch after 5 seconds of being able to send commands, the 5 sec needed to the robot can calculate battery level etc.
     mode: queued
     then: 
@@ -221,6 +243,12 @@ interval:
   - interval: ${infointerval}
     then:
       - uart.write: "GetErr \n"
+  - interval: ${infointerval}
+    then:
+      - uart.write: "GetMotor \n"
+  - interval: ${infointerval}
+    then:
+      - uart.write: "GetVersion \n"      
   - interval: ${chargerinterval}
     then: 
       - uart.write: "GetCharger \n"
@@ -300,7 +328,9 @@ uart:
             // 0: GetErr
             // 1: <error>
 
-            if (lines.size() == 2) id(robotError).publish_state(lines[1].c_str());
+            if (lines.size() == 3 && lines[1] != "") id(robotError).publish_state(lines[1].c_str());
+            else id(robotError).publish_state("No errors");
+
 
             // If we can get erros/alerts, the system is ready for other commands:
             if (!id(initial_ready)) {
@@ -331,7 +361,7 @@ uart:
               trim(value);
 
               // ---- MATCH KEYS AND PUBLISH ----
-                   if (key == "FuelPercent") id(chargerFuelPercent).publish_state(atof(value.c_str()));
+              if (key == "FuelPercent") id(chargerFuelPercent).publish_state(atof(value.c_str()));
               else if (key == "BatteryOverTemp") id(chargerBatteryOverTemp).publish_state(value == "1");
               else if (key == "ChargingActive") id(chargerChargingActive).publish_state(value == "1");
               else if (key == "ChargingEnabled") id(chargerChargingEnabled).publish_state(value == "1");
@@ -349,6 +379,27 @@ uart:
             }
           }
 
+          else if (command == "GetWarranty") {
+              // Format after the header:
+              // Item,Value
+              // CumulativeCleaningTimeInSecs,001ce34f
+              // CumulativeBatteryCycles,01f7
+              // ValidationCode,15648b6e
+              for (size_t i = 2; i < lines.size(); i++) {
+                  std::string &line = lines[i];
+                  size_t comma = line.find(',');
+                  if (comma == std::string::npos) continue;
+                  std::string key = line.substr(0, comma);
+                  std::string value = line.substr(comma + 1);
+                  // Trim whitespace
+                  trim(key);
+                  trim(value);
+                  if (key == "CumulativeBatteryCycles") {
+                      uint32_t cycles = hex_to_uint32(value);
+                      id(batteryCycles).publish_state(cycles);
+                  }
+              }
+          }
           else if (command == "SetSystemMode") { // Using this command to figure out if you have testmode on or off
             // 0: SetSystemMode
             // 1: "TestMode must be on to use this command." OR "No options specified"
@@ -367,7 +418,9 @@ uart:
               trim(key);
               trim(value);
 
-                   if (key == "Serial Number") id(robotSerial).publish_state(value.c_str());
+              if (key == "MainBoard Serial Number") id(mainBoardSerial).publish_state(value.c_str());
+              else if (key == "MainBoard Version") id(mainBoardVersion).publish_state(value.c_str());
+              else if (key == "Serial Number") id(robotSerial).publish_state(value.c_str());
               else if (key == "Model") id(robotModel).publish_state(value.c_str());
               else if (key == "Software") id(robotSoftware).publish_state(value.c_str());
             }
@@ -388,7 +441,8 @@ uart:
                 trim(key);
                 trim(value);
 
-                     if (key == "ClickSounds") id(clickSounds).publish_state(value == "ON");
+                if (key == "ClickSounds") id(clickSounds).publish_state(value == "ON");
+                else if (key == "Language") id(language).publish_state(value.c_str());
                 else if (key == "StealthLED") id(stealthLed).publish_state(value == "ON");
                 else if (key == "LED") id(led).publish_state(value == "ON");
                 else if (key == "AutoShutdown") id(autoShutdownEnabled).publish_state(value == "ON");
@@ -551,6 +605,19 @@ sensor:
     unit_of_measurement: "mAh"
     entity_category: "diagnostic"
 
+  # --- GetWarranty ---
+  - platform: template
+    name: "Battery Cycles"
+    id: batteryCycles
+    unit_of_measurement: "cycles"
+    entity_category: "diagnostic"
+
+  # --- Last cleaning ---
+  - platform: template
+    name: "Last cleaning duration"
+    id: last_cleaning_duration
+    unit_of_measurement: "min"
+
 
 binary_sensor:
   # --- GetCharger ---
@@ -617,6 +684,16 @@ text_sensor:
 
   # --- GetVersion ---
   - platform: template
+    id: mainBoardSerial
+    name: "MainBoard Serial Number"
+    entity_category: "diagnostic"
+
+  - platform: template
+    id: mainBoardVersion
+    name: "MainBoard Version"
+    entity_category: "diagnostic"
+
+  - platform: template
     id: robotSerial
     name: "Serial Number"
     entity_category: "diagnostic"
@@ -631,10 +708,49 @@ text_sensor:
     name: "Software"
     entity_category: "diagnostic"
 
+
+
+  - platform: template
+    id: timeLocal
+    name: "Time Local"
+    entity_category: "diagnostic"
+
+  - platform: template
+    id: timeUTC
+    name: "Time UTC"
+    entity_category: "diagnostic"
+
+  # --- GetUserSettings ---
+  - platform: template
+    name: "Language"
+    id: language
+    entity_category: "diagnostic"
+
   # --- GetState ---
   - platform: template
     name: "UI State"
     id: uiState
+
+  # --- GetMotor ---
+  - platform: template
+    id: vacuumRPM
+    name: "Vacuum Speed"
+    entity_category: "diagnostic"
+
+  - platform: template
+    id: brushRPM
+    name: "Brush Speed"
+    entity_category: "diagnostic"
+
+  - platform: template
+    id: leftWheelRPM
+    name: "Left Wheel Speed"
+    entity_category: "diagnostic"
+
+  - platform: template
+    id: rightWheelRPM
+    name: "Right Wheel Speed"
+    entity_category: "diagnostic"            
 
 switch:
   - platform: template
@@ -846,7 +962,7 @@ button:
       - script.execute:
           id: play_extra_sounds
           soundid: 1
-      - uart.write: "SetButton start \n"
+      - uart.write: "clean house \n"
 
   - platform: template
     name: "Spot Clean"
@@ -855,7 +971,7 @@ button:
       - script.execute:
           id: play_extra_sounds
           soundid: 1
-      - uart.write: "SetButton spot \n"
+      - uart.write: "clean spot \n"
 
   - platform: template
     name: "Spot Clean (Height & Width)"
