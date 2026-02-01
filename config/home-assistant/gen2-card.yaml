@@ -8,7 +8,7 @@ variables:
     not promised. Please try to keep the versions the same, and check the github
     for updates!
   project: philip2809.neato-connected
-  version: "1.2-b.5"
+  version: 1.2-b.6
 cards:
   - type: custom:button-card
     variables:
@@ -26,6 +26,12 @@ cards:
     name: |
       [[[ 
         const uiState = states[`sensor.${variables.robot_id}_ui_state`]?.state || '';
+        if (uiState.includes('STATE_IDLE')) return 'IDLE';
+        else if (states[`binary_sensor.${variables.robot_id}_charging_active`]?.state == 'on') return 'CHARGING';
+        else if (states[`binary_sensor.${variables.robot_id}_ext_power_present`]?.state === 'on') return 'STANDBY';
+        else if (states[`sensor.${variables.robot_id}_vacuum_speed`]?.state > 0) return 'CLEANING';
+        else if (Math.abs(Number(states[`sensor.${variables.robot_id}_leftwheel_speed`]?.state > 0))) return 'MOVING';        
+        else if (Math.abs(Number(states[`sensor.${variables.robot_id}_rightwheel_speed`]?.state > 0))) return 'MOVING';                
         return uiState
       ]]]
     styles:
@@ -37,7 +43,7 @@ cards:
               if (uiState === "Shutting down...") return 'gray';
 
               const err = states[`sensor.${variables.robot_id}_robot_error`]?.state || '';
-              if (err !== "unknown") return '#950606';
+              if (err !== "No errors") return '#950606';
               return '#00cc00';
             ]]]
       card:
@@ -120,7 +126,7 @@ cards:
                 - border-color: |
                     [[[ 
                       const err = states[`sensor.${variables.robot_id}_robot_error`]?.state || '';
-                      return err === "unknown" ? "" : "#950606"; 
+                      return err === "No errors" ? "" : "#950606"; 
                     ]]]
             name: |
               [[[ 
@@ -155,6 +161,7 @@ cards:
           robot_id: neato_vacuum
         entity: "[[[ return `button.${variables.robot_id}_spot_clean`; ]]]"
         name: Spot Clean
+        icon: mdi:target
         tap_action:
           action: toggle
         hold_action:
@@ -169,16 +176,16 @@ cards:
                 cards:
                   - type: entities
                     entities:
-                      - entity: number.neato_vacuum_spot_clean_height
+                      - entity: number.${variables.robot_id}_spot_clean_height
                         name: Height
                         icon: mdi:arrow-up-down
-                      - entity: number.neato_vacuum_spot_clean_width
+                      - entity: number.${variables.robot_id}_spot_clean_width
                         name: Width
                         icon: mdi:arrow-left-right
                   - type: custom:button-card
                     size: 20%
                     name: Start Spot Cleaning
-                    entity: button.neato_vacuum_spot_clean_height_width
+                    entity: button.${variables.robot_id}_spot_clean_height_width
                     tap_action:
                       action: toggle
   - type: horizontal-stack
@@ -188,6 +195,7 @@ cards:
           robot_id: neato_vacuum
         entity: "[[[ return `button.${variables.robot_id}_stop_cleaning`; ]]]"
         name: STOP
+        icon: mdi:stop
         tap_action:
           action: toggle
       - type: custom:button-card
@@ -197,8 +205,13 @@ cards:
         name: Locate
         tap_action:
           action: toggle
-      - type: custom:button-card
-        entity: button.neato_vacuum_send_to_start
+      - type: conditional
+        conditions:
+          - entity: binary_sensor.${variables.robot_id}_ext_power_present
+            state_not: "on"
+        card:
+          type: custom:button-card
+          entity: button.${variables.robot_id}_send_to_start
         name: Send to start
         tap_action:
           action: toggle
@@ -241,20 +254,14 @@ cards:
                         type: button
                         tap_action:
                           action: toggle
-                      - entity: >-
-                          [[[ return
-                          `button.${variables.robot_id}_clear_errors`; ]]]
-                        name: Clear Errors
-                        show_icon: true
-                        type: button
-                        tap_action:
-                          action: toggle
                   - type: entities
                     entities:
                       - entity: >-
                           [[[ return
-                          `switch.${variables.robot_id}_play_extra_sounds`; ]]]
-                        name: Play extra sounds
+                          `switch.${variables.robot_id}_intenseclean`; ]]]
+                        name: Intense Clean
+                      - entity: "[[[ return `switch.${variables.robot_id}_wifi`; ]]]"
+                        name: WiFi
                       - entity: >-
                           [[[ return
                           `switch.${variables.robot_id}_click_sounds`; ]]]
@@ -268,20 +275,6 @@ cards:
                           `switch.${variables.robot_id}_warning_sounds`; ]]]
                         name: Warning Sounds
                       - entity: >-
-                          [[[ return
-                          `switch.${variables.robot_id}_bin_full_detect`; ]]]
-                        name: Bin Full Detect
-                      - entity: >-
-                          [[[ return
-                          `switch.${variables.robot_id}_autoshutdown`; ]]]
-                        name: Auto Shutdown
-                      - entity: "[[[ return `switch.${variables.robot_id}_led`; ]]]"
-                        name: LED
-                      - entity: >-
-                          [[[ return `switch.${variables.robot_id}_stealthled`;
-                          ]]]
-                        name: Stealth Led
-                      - entity: >-
                           [[[ return `switch.${variables.robot_id}_wall_enable`;
                           ]]]
                         name: Wall Follower
@@ -289,12 +282,6 @@ cards:
                           [[[ return
                           `switch.${variables.robot_id}_intenseclean`; ]]]
                         name: Intense Clean
-                      - entity: "[[[ return `switch.${variables.robot_id}_wifi`; ]]]"
-                        name: WiFi
-                      - entity: >-
-                          [[[ return
-                          `switch.${variables.robot_id}_robot_schedule`; ]]]
-                        name: Robot Schedule
                     state_color: false
                     show_header_toggle: false
                   - type: entities
@@ -305,10 +292,6 @@ cards:
                           [[[ return
                           `sensor.${variables.robot_id}_serial_number`;]]]
                         name: S/N
-                      - entity: "[[[ return `sensor.${variables.robot_id}_software`;]]]"
-                        name: Software
-                      - entity: "[[[ return `sensor.${variables.robot_id}_nbs_time`;]]]"
-                        name: Robot Time
                       - entity: >-
                           [[[ return
                           `sensor.${variables.robot_id}_battery_voltage_v`;]]]
