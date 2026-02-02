@@ -30,7 +30,7 @@ substitutions:
 # If you don't want the webserver, uncomment/remove this part
 web_server:
   port: 80
-  js_url: "https://philip2809.github.io/neato-connected/esphome-config/1.2-b.6.js"
+  js_url: "https://cdn.jsdelivr.net/gh/philip2809/neato-connected@next/docs/esphome-config/1.2-b.6.js"
 
 logger:
   baud_rate: 0
