@@ -77,16 +77,18 @@ Since there is a couple of robots from neato and they have different firmware ve
 | Edit settings | ❌ | ✅ | ✅ |
 | Scheduling on robot (via screen) | ✅ | ✅ | ❌ |
 | Scheduling via ESPHome | ✅ | ✅ | ✅ |
-| Scheduling via HA Automation | ✅¹ | ✅¹ | ✅¹ |
-| Notifications | ✅¹ | ✅¹ | ✅¹ |
-| Return to start | ❌ | ✅ | ❌ |
-| Return to dock | ❌ | ❌ | ✅ |
-| Manual driving | ❌ | ❌ | ✅ |
+| Scheduling via HA Automation | ✅ ¹ | ✅ ¹ | ✅ ¹ |
+| Notifications | ✅ ¹ | ✅ ¹ | ✅ ¹ |
+| Return to start | ❌ ³ | ✅ | ❌ ³ |
+| Return to dock | ❌ ³ | ❌ ³ | ✅ |
+| Manual driving | ❌ ² | ❌ ² | ✅ |
 
 - ✅ - Supported
 - 🟠 - Limited functionality
 - ❌ - Not supported
 - ¹ - Home Assistant required
+- ² - Support can be added by version 1
+- ³ - Support can be added by version 2
 
 The ability to create, view and edit floormaps so the robot can get the same functionallity with nogo-lines and zones is in the making.
 
@@ -129,8 +131,7 @@ There is two ways of using this repair:
 **From version 2 of this project, when ROS is used for getting a floormap, you will need a separate computer running ROS, and the easiest and prioritized way to set that up will be via Home Assistant.**
 
 ## Beta
-
-
+The `main` branch will have the code and guide for the latest release, but in case you want to try the latest beta this version with live on the `next` branch. In case certain features are on their way into the beta, but not in a beta yet, they will live on `next/<feature name>`. 
 
 ## Star History
 
