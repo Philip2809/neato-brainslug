@@ -32,7 +32,7 @@ cards:
         else if (states[`sensor.${variables.robot_id}_vacuum_speed`]?.state > 0) return 'CLEANING';
         else if (Math.abs(Number(states[`sensor.${variables.robot_id}_leftwheel_speed`]?.state > 0))) return 'MOVING';        
         else if (Math.abs(Number(states[`sensor.${variables.robot_id}_rightwheel_speed`]?.state > 0))) return 'MOVING';                
-        return uiState
+        return 'STOPPED'
       ]]]
     styles:
       icon:
@@ -203,6 +203,7 @@ cards:
           robot_id: neato_vacuum
         entity: "[[[ return `button.${variables.robot_id}_locate_robot`; ]]]"
         name: Locate
+        show_icon: true
         tap_action:
           action: toggle
       - type: conditional
@@ -211,10 +212,13 @@ cards:
             state_not: "on"
         card:
           type: custom:button-card
-          entity: button.${variables.robot_id}_send_to_start
-        name: Send to start
-        tap_action:
-          action: toggle
+          variables:
+            robot_id: neato_vacuum
+          entity: "[[[ return `button.${variables.robot_id}_send_to_start`; ]]]"
+          name: Send to start
+          show_icon: true
+          tap_action:
+            action: toggle
       - type: custom:button-card
         variables:
           robot_id: neato_vacuum
@@ -254,8 +258,20 @@ cards:
                         type: button
                         tap_action:
                           action: toggle
+                      - entity: >-
+                          [[[ return
+                          `button.${variables.robot_id}_clear_errors`; ]]]
+                        name: Clear Errors
+                        show_icon: true
+                        type: button
+                        tap_action:
+                          action: toggle
                   - type: entities
                     entities:
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_play_extra_sounds`; ]]]
+                        name: Play extra sounds
                       - entity: >-
                           [[[ return
                           `switch.${variables.robot_id}_intenseclean`; ]]]
@@ -275,13 +291,29 @@ cards:
                           `switch.${variables.robot_id}_warning_sounds`; ]]]
                         name: Warning Sounds
                       - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_bin_full_detect`; ]]]
+                        name: Bin Full Detect
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_autoshutdown`; ]]]
+                        name: Auto Shutdown
+                      - entity: >-
+                          [[[ return
+                          `switch.${variables.robot_id}_leds_enabled`;  ]]]
+                        name: LEDs Enabled
+                      - entity: >-
+                          [[[ return `switch.${variables.robot_id}_stealthled`;
+                          ]]]
+                        name: Stealth LED
+                      - entity: >-
                           [[[ return `switch.${variables.robot_id}_wall_enable`;
                           ]]]
                         name: Wall Follower
                       - entity: >-
                           [[[ return
-                          `switch.${variables.robot_id}_intenseclean`; ]]]
-                        name: Intense Clean
+                          `switch.${variables.robot_id}_robot_schedule`; ]]]
+                        name: Robot Schedule
                     state_color: false
                     show_header_toggle: false
                   - type: entities
@@ -292,6 +324,10 @@ cards:
                           [[[ return
                           `sensor.${variables.robot_id}_serial_number`;]]]
                         name: S/N
+                      - entity: "[[[ return `sensor.${variables.robot_id}_software`;]]]"
+                        name: Software
+                      - entity: "[[[ return `sensor.${variables.robot_id}_nbs_time`;]]]"
+                        name: Robot Time
                       - entity: >-
                           [[[ return
                           `sensor.${variables.robot_id}_battery_voltage_v`;]]]
@@ -300,6 +336,10 @@ cards:
                           [[[ return
                           `sensor.${variables.robot_id}_battery_temp_c_avg`;]]]
                         name: Battery Temp (avg)
+                      - entity: >-
+                          [[[ return
+                          `sensor.${variables.robot_id}_battery_cycles`;]]]
+                        name: Battery Cycles
                       - entity: >-
                           [[[ return
                           `sensor.${variables.robot_id}_charger_mah`;]]]
