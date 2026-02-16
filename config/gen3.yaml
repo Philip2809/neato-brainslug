@@ -5,17 +5,21 @@
 # If you are using an ESP32, set your variant to which one you have e.g. ESP32C3, ESP32S3, ESP32C6 etc
 # if you are using an ESP8266, remove the "esp32" part and define an "esp8266" you will NEED to add "restore_from_flash" to "true"
 esp32:
-  variant: ESP32
+  variant: esp32
   framework:
     type: esp-idf
-
-# You will need to figure out which pins work on your board for UART.
+    sdkconfig_options:
+      CONFIG_ESP_TASK_WDT_TIMEOUT_S: "10"  # Increase from 5 to 10 seconds to prevent Wifi issues causing a crash
+      CONFIG_ESP_TASK_WDT_PANIC: "y"     
+      CONFIG_ESP_BROWNOUT_DET: "y"
+      CONFIG_ESP_BROWNOUT_DET_LVL_SEL_7: "y"  # 2.51V threshold 
+      
 substitutions:
   uart_tx: <SET BASED ON YOUR DEVICE>
   uart_rx: <SET BASED ON YOUR DEVICE>
   comment: "" # If you want to write a comment about this vacuum, do so here. e.g. "Downstairs garage vacuum"
 
-  infointerval: 2sec
+  infointerval: 5sec
   chargerinterval: 2min
 
   # ---- Version and robot type ----
@@ -25,7 +29,7 @@ substitutions:
   # --------------------------------
 
   time_platform: homeassistant # use "homeassistant" if you are using Home Assistant, use "sntp" if not
-  timezone: null # if you have Home Assistant, you don't need this, if you use sntp, then define your timezone here!
+  timezone: "Europe/Dublin" # if you have Home Assistant, you don't need this, if you use sntp, then define your timezone here!
 
 # If you don't want the webserver, uncomment/remove this part
 web_server:
@@ -35,6 +39,9 @@ web_server:
 logger:
   baud_rate: 0
 
+debug:
+  update_interval: 5s
+
 ota:
   - platform: esphome
     password: !secret neato_vacuum_ota
@@ -42,7 +49,11 @@ ota:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-
+  power_save_mode: none
+  fast_connect: true
+  reboot_timeout: 0s
+  enable_rrm: false
+  enable_btm: false
   ap:
     ssid: "neato-brainslug"
     password: "make-it-suck-again"
@@ -55,7 +66,7 @@ wifi:
 captive_portal:
 
 esphome:
-  name: neato-vacuum # If you want another name, change it here, remeber to replace it in the ha-card.yaml!
+  name: neato-vaccum # If you want another name, change it here, remeber to replace it in the ha-card.yaml!
   name_add_mac_suffix: False # If you have multiple deivces and don't change the names you can also enable this! (Used for the prebuilt images)
 ##############################################################################################################################
 
@@ -153,51 +164,255 @@ script:
   - id: get_user_settings
     mode: queued
     then:
-      - delay: 100ms
       - uart.write: "GetUserSettings \n"
+      - delay: 500ms
 
   - id: get_all_data
     mode: queued
     then: 
       - uart.write: "GetErr \n"  
-      - delay: 50ms  
+      - delay: 500ms  
       - uart.write: "GetState \n"    
-      - delay: 50ms  
+      - delay: 500ms  
       - uart.write: "GetCharger \n"    
-      - delay: 50ms  
+      - delay: 500ms  
       - uart.write: "GetUserSettings \n"  
-      - delay: 50ms
+      - delay: 500ms
       - uart.write: "GetWarranty \n"
-      - delay: 50ms  
+      - delay: 500ms  
       - uart.write: "TestMode \n"
-      - delay: 50ms  
+      - delay: 500ms  
       - uart.write: "GetVersion \n"    
-  
-  - id: initial_data_get # when the robot has booted, run this initial fetch after 5 seconds of being able to send commands, the 5 sec needed to the robot can calculate battery level etc.
+      - delay: 500ms
+
+ # ============================================================================
+  # NEW: Full restore script (used on boot)
+  # ============================================================================
+  - id: restore_user_settings
+    mode: single
+    then:
+      - logger.log:
+          level: INFO
+          tag: script
+          format: "Restoring User Settings to Robot"
+      
+      - uart.write: "TestMode On \n"
+      - delay: 200ms
+      
+      # Restore all settings
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings ButtonClick ";
+          cmd += id(g_click_sounds) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 100ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings StealthLED ";
+          cmd += id(g_led) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 100ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings WallEnable ";
+          cmd += id(g_wall_enable) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 100ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings EcoMode ";
+          cmd += id(g_eco_mode) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 100ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings IntenseClean ";
+          cmd += id(g_intense_clean) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 100ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings WiFi ";
+          cmd += id(g_wifi_onoff) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 100ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings Melodies ";
+          cmd += id(g_melody_sounds) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 100ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings Warnings ";
+          cmd += id(g_warning_sounds) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 100ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings BinFullDetect ";
+          cmd += id(g_bin_full_detect) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 100ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetNavigationMode " + id(g_navigation_mode) + "\n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 100ms
+      
+      - uart.write: "TestMode Off \n"
+      - delay: 200ms
+      
+      - logger.log:
+          level: INFO
+          tag: script
+          format: "User Settings Restored"
+
+  # ============================================================================
+  # NEW: Quick restore script (used before cleaning starts)
+  # ============================================================================
+  - id: quick_restore_user_settings
+    mode: single
+    then:
+      - logger.log:
+          level: INFO
+          tag: script
+          format: "Quick Restoring User Settings"
+      
+      # No TestMode toggle for speed - just send critical settings
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings ButtonClick ";
+          cmd += id(g_click_sounds) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 50ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings StealthLED ";
+          cmd += id(g_led) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 50ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings WallEnable ";
+          cmd += id(g_wall_enable) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 50ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings EcoMode ";
+          cmd += id(g_eco_mode) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 50ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings IntenseClean ";
+          cmd += id(g_intense_clean) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 50ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings WiFi ";
+          cmd += id(g_wifi_onoff) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 50ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings Melodies ";
+          cmd += id(g_melody_sounds) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 50ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings Warnings ";
+          cmd += id(g_warning_sounds) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 50ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetUserSettings BinFullDetect ";
+          cmd += id(g_bin_full_detect) ? "ON" : "OFF";
+          cmd += " \n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 50ms
+      
+      - uart.write: !lambda |-
+          std::string cmd = "SetNavigationMode " + id(g_navigation_mode) + "\n";
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
+      - delay: 50ms
+      
+      - logger.log:
+          level: INFO
+          tag: script
+          format: "Quick Restore Complete"
+
+  # ============================================================================
+  # UPDATED: Initial data get - now restores settings first
+  # ============================================================================
+  - id: initial_data_get
     mode: queued
     then: 
+      - logger.log:
+          level: INFO
+          tag: script
+          format: "Get Init Data"  
       - delay: 5sec
+      
+      # Restore settings FIRST (before getting data)
+      - script.execute: restore_user_settings
+      - delay: 2sec
+      
+      # Then get all data
       - script.execute: get_all_data
 
   - id: robotShutdown
     mode: queued
     then:
+      - logger.log:
+          level: INFO
+          tag: script
+          format: "Shutdown"
       - lambda: 'id(uiState).publish_state("Shutting down...");'
       - uart.write: "TestMode On \n"
-      - delay: 100ms
+      - delay: 100ms 
       - uart.write: "SetSystemMode Shutdown \n"
+      - delay: 100ms 
 
   - id: powercycle
     mode: queued
     then:
-      - lambda: 'id(initial_ready) = false;' # I want to refetch all data in case we powercycle
+      - logger.log:
+          level: INFO
+          tag: script
+          format: "Reboot"
+      - lambda: 'id(initial_ready) = false;'
       - lambda: 'id(uiState).publish_state("Shutting down...");'
       - uart.write: "TestMode On \n"
-      - delay: 100ms
+      - delay: 500ms 
       - uart.write: "SetSystemMode PowerCycle \n"
+      - delay: 100ms 
 
   - id: cleaning_stopped
     then: 
+      - logger.log:
+          level: INFO
+          tag: script
+          format: "Cleaning Stopped"
       - lambda: !lambda |-
           uint64_t now_ts = id(nbs_time).now().timestamp;
           uint64_t start_ts = id(g_last_cleaning_start_time);
@@ -230,7 +445,36 @@ script:
           std::string s =
             "SetEvent event " + event + " SKey " + id(robot_skey) + "\n";
           return std::vector<uint8_t>(s.begin(), s.end());
+  
+  - id: get_error
+    mode: single
+    then:
+      - logger.log:
+          level: INFO
+          tag: script
+          format: "Get Error"
+      - uart.write: "GetErr \n"
+      - delay: 500ms
 
+  - id: get_state
+    mode: single
+    then:
+      - logger.log:
+          level: INFO
+          tag: script
+          format: "Get State"
+      - uart.write: "GetState \n"
+      - delay: 500ms 
+
+  - id: get_charger
+    mode: single
+    then:
+      - logger.log:
+          level: INFO
+          tag: script
+          format: "Get Charger"
+      - uart.write: "GetCharger \n"
+      - delay: 500ms
 
 globals:
   - id: initial_ready
@@ -269,16 +513,69 @@ globals:
     restore_value: yes
     initial_value: ''
 
+  # ============================================================================
+  # NEW: User Settings Persistence
+  # ============================================================================
+
+  - id: g_click_sounds
+    type: bool
+    restore_value: yes
+    initial_value: 'true'
+  
+  - id: g_led
+    type: bool
+    restore_value: yes
+    initial_value: 'true'
+  
+  - id: g_wall_enable
+    type: bool
+    restore_value: yes
+    initial_value: 'true'
+  
+  - id: g_eco_mode
+    type: bool
+    restore_value: yes
+    initial_value: 'false'
+  
+  - id: g_intense_clean
+    type: bool
+    restore_value: yes
+    initial_value: 'false'
+  
+  - id: g_wifi_onoff
+    type: bool
+    restore_value: yes
+    initial_value: 'true'
+  
+  - id: g_melody_sounds
+    type: bool
+    restore_value: yes
+    initial_value: 'true'
+  
+  - id: g_warning_sounds
+    type: bool
+    restore_value: yes
+    initial_value: 'true'
+  
+  - id: g_bin_full_detect
+    type: bool
+    restore_value: yes
+    initial_value: 'true'
+  
+  - id: g_navigation_mode
+    type: std::string
+    restore_value: yes
+    initial_value: '"Normal"'
 
 interval:
   - interval: ${infointerval}
     then:
-      - uart.write: "GetErr \n"
-      - uart.write: "GetState \n"
+      - script.execute: get_state
+      - script.execute: get_error
+
   - interval: ${chargerinterval}
     then: 
-      - uart.write: "GetCharger \n"
-
+      - script.execute: get_charger
 
 uart:
   id: uart_bus
@@ -332,53 +629,70 @@ uart:
             if (!last.empty()) lines.push_back(last);
           }
 
-          if (lines.empty()) return;
+          if (lines.empty()) {
+            ESP_LOGW("uart_parser", "No valid lines in packet");
+            return;
+          }
 
           // ---- DETECT WHICH COMMAND WAS USED ----
           std::string command = lines[0];  // first line (GetErr, GetState, etc.)
 
+          ESP_LOGI("uart_parser", "COMMAND: %s (%d lines)", command.c_str(), lines.size());
 
-          ESP_LOGI("uart_parser", "COMMAND: %s", command.c_str());
           // ---- OPTIONAL: print each line for debugging ----
           for (auto &line : lines) {
             std::vector<uint8_t> v(line.begin(), line.end());
-            UARTDebug::log_string(direction, v);
-            //ESP_LOGI("uart_parser", "LINE: %s", line.c_str());
+            // UARTDebug::log_string(direction, v);
           }
 
-
-
-          // ---- SPECIAL PARSING FOR GetErr ----
+          // ============================================================================
+          // PARSE GetErr
+          // ============================================================================
           if (command == "GetErr") {
-            // A GetErr response looks like for gen3:
+            // Expected format:
             // 0: GetErr
             // 1: Error
             // 2: <error1>
             // 3: Alert
             // 4: <error2>
             // 5: USB state
-            // 6: NOT connected
+            // 6: NOT connected / connected
 
-            if (lines.size() < 7) return;
-            if (lines[1] != "Error" || lines[3] != "Alert") return;
+            if (lines.size() < 7) {
+              ESP_LOGW("uart_parser", "GetErr: incomplete response (%d lines)", lines.size());
+              return;
+            }
+
+            if (lines[1] != "Error" || lines[3] != "Alert") {
+              ESP_LOGW("uart_parser", "GetErr: unexpected format");
+              return;
+            }
 
             id(robotError).publish_state(lines[2].c_str());
             id(robotAlert).publish_state(lines[4].c_str());
             id(usbConnected).publish_state(lines[6].find("NOT connected") == std::string::npos);
 
-            // If we can get erros/alerts, the system is ready for other commands:
+            // If we can get errors/alerts, the system is ready for other commands:
             if (!id(initial_ready)) {
                 id(initial_ready) = true;
                 id(initial_data_get).execute();
             }
           }
 
+          // ============================================================================
+          // PARSE GetCharger
+          // ============================================================================
           else if (command == "GetCharger") {
             // Format after the header:
             // Label,Value
             // FuelPercent,53
             // BatteryOverTemp,0
             // ...
+
+            if (lines.size() < 3) {
+              ESP_LOGW("uart_parser", "GetCharger: too few lines (%d)", lines.size());
+              return;
+            }
 
             for (size_t i = 2; i < lines.size(); i++) {
               std::string &line = lines[i];
@@ -412,12 +726,20 @@ uart:
             }
           }
 
+          // ============================================================================
+          // PARSE GetWarranty
+          // ============================================================================
           else if (command == "GetWarranty") {
               // Format after the header:
               // Item,Value
               // CumulativeCleaningTimeInSecs,001ce34f
               // CumulativeBatteryCycles,01f7
               // ValidationCode,15648b6e
+
+              if (lines.size() < 3) {
+                ESP_LOGW("uart_parser", "GetWarranty: too few lines (%d)", lines.size());
+                return;
+              }
 
               for (size_t i = 2; i < lines.size(); i++) {
                   std::string &line = lines[i];
@@ -438,7 +760,15 @@ uart:
               }
           }
 
+          // ============================================================================
+          // PARSE GetVersion
+          // ============================================================================
           else if (command == "GetVersion") {
+            if (lines.size() < 2) {
+              ESP_LOGW("uart_parser", "GetVersion: too few lines (%d)", lines.size());
+              return;
+            }
+
             for (auto &line : lines) {
               size_t comma = line.find(',');
               if (comma == std::string::npos) continue;
@@ -453,19 +783,51 @@ uart:
               else if (key == "Software") id(robotSoftware).publish_state(value.c_str());
             }
           }
+
+          // ============================================================================
+          // PARSE TestMode
+          // ============================================================================
           else if (command == "TestMode") {
+            if (lines.size() < 2) {
+              ESP_LOGW("uart_parser", "TestMode: too few lines (%d)", lines.size());
+              return;
+            }
+
             if (lines[1].find(": On") != std::string::npos) id(testMode).publish_state(true);
             else if (lines[1].find(": Off") != std::string::npos) id(testMode).publish_state(false);
-          } 
-          
+          }
+
+          // ============================================================================
+          // PARSE GetState
+          // ============================================================================
           else if (command == "GetState") {
-              std::string &states_line = lines[1];  // "Current UI State is: ...\nCurrent Robot State is: ...\n\x1A"
+              // Expected format:
+              // 0: GetState
+              // 1: "Current UI State is: XXX\nCurrent Robot State is: YYY"
+
+              if (lines.size() < 2) {
+                ESP_LOGW("uart_parser", "GetState: too few lines (%d)", lines.size());
+                return;
+              }
+
+              std::string &states_line = lines[1];
 
               size_t sep = states_line.find('\n');
-              if (sep == std::string::npos) return;  // safety
+              if (sep == std::string::npos) {
+                ESP_LOGW("uart_parser", "GetState: no newline separator found");
+                return;
+              }
 
               std::string ui_line = states_line.substr(0, sep);
-              std::string robot_line = states_line.substr(sep + 1);
+              
+              // BOUNDS CHECK: Make sure there's data after the newline
+              std::string robot_line;
+              if (sep + 1 < states_line.length()) {
+                  robot_line = states_line.substr(sep + 1);
+              } else {
+                  ESP_LOGW("uart_parser", "GetState: no robot state data after newline");
+                  return;
+              }
 
               static const char* prefix_ui = "Current UI State is: ";
               static const char* prefix_robot = "Current Robot State is: ";
@@ -520,8 +882,15 @@ uart:
               }
           }
 
-
+          // ============================================================================
+          // PARSE GetUserSettings
+          // ============================================================================
           else if (command == "GetUserSettings") {
+            if (lines.size() < 2) {
+              ESP_LOGW("uart_parser", "GetUserSettings: too few lines (%d)", lines.size());
+              return;
+            }
+
             for (auto &line : lines) {
               trim(line);
 
@@ -561,8 +930,21 @@ uart:
                 id(numberDustBinFull).publish_state(atof(val.c_str()));
               } 
             }
-          } else if (command.find("ARCHES Board") != std::string::npos) id(uiState).publish_state("Starting...");
+          }
 
+          // ============================================================================
+          // PARSE ARCHES Board (startup message)
+          // ============================================================================
+          else if (command.find("ARCHES Board") != std::string::npos) {
+            id(uiState).publish_state("Starting...");
+          }
+
+          // ============================================================================
+          // UNKNOWN COMMAND
+          // ============================================================================
+          else {
+            ESP_LOGW("uart_parser", "Unknown data received: %s", command.c_str());
+          }
 
 time:
   - platform: ${time_platform}
@@ -574,7 +956,12 @@ time:
         then:
           - lambda: !lambda |-
               auto now = id(nbs_time).now();
-              if (!now.is_valid()) return;
+              
+              // VALIDATION: Check if time is valid
+              if (!now.is_valid()) {
+                ESP_LOGW("schedule", "Time not valid yet, skipping");
+                return;
+              }
 
               uint8_t flags = id(g_schedule)[0];
 
@@ -610,7 +997,13 @@ time:
 
               // check match
               if (now.hour == target_hour && now.minute == target_min) {
-                ESP_LOGD("schedule", "Schedule matched → DO ACTION");
+                ESP_LOGI("schedule", "Schedule matched → Restoring settings then starting clean");
+                
+                // Restore settings BEFORE starting scheduled clean
+                // This ensures the clean starts with correct Eco/Intense/Wall settings
+                id(quick_restore_user_settings).execute();
+                
+                // Now trigger the clean (houseClean button has its own restore, but won't hurt)
                 id(houseClean).press();
               }
 
@@ -673,7 +1066,6 @@ text:
 
 
 sensor:
-  # --- GetCharger ---
   - platform: template
     id: chargerFuelPercent
     name: "Fuel Percent"
@@ -709,7 +1101,6 @@ sensor:
     unit_of_measurement: "mAh"
     entity_category: "diagnostic"
 
-  # --- GetUserSettings ---
   - platform: template
     name: "Filter Change Time"
     id: filterChangeTime
@@ -740,28 +1131,30 @@ sensor:
     unit_of_measurement: "count"
     entity_category: "diagnostic"
 
-  # --- GetWarranty ---
   - platform: template
     name: "Battery Cycles"
     id: batteryCycles
     unit_of_measurement: "cycles"
     entity_category: "diagnostic"
 
-  # --- Last cleaning ---
   - platform: template
     name: "Last cleaning duration"
     id: last_cleaning_duration
     unit_of_measurement: "min"
 
+  - platform: adc
+    pin: GPIO36
+    name: "Vcc"
+    update_interval: 1s
+    attenuation: 12db
 
 binary_sensor:
-  # --- GetErr ---
+
   - platform: template
     id: usbConnected
     name: "USB Connected"
     entity_category: "diagnostic"
 
-  # --- GetCharger ---
   - platform: template
     id: chargerBatteryOverTemp
     name: "Battery Over Temp"
@@ -807,8 +1200,8 @@ binary_sensor:
     name: "Thermistor Present"
     entity_category: "diagnostic"
 
-
 text_sensor:
+
   - platform: template
     id: nbs_time_text
     name: "NBS Time"
@@ -818,7 +1211,6 @@ text_sensor:
       snprintf(buf, sizeof(buf), "%02d:%02d", t.hour, t.minute);
       return std::string(buf);
 
-  # --- Last cleaning ---
   - platform: template
     name: "Last cleaning time"
     id: last_cleaning_time
@@ -827,7 +1219,6 @@ text_sensor:
     name: "Last cleaning type"
     id: last_cleaning_type
 
-  # --- GetErr ---
   - platform: template
     id: robotError
     name: "Robot Error"
@@ -836,7 +1227,6 @@ text_sensor:
     id: robotAlert
     name: "Robot Alert"
 
-  # --- GetVersion ---
   - platform: template
     id: robotSerial
     name: "Serial Number"
@@ -896,6 +1286,12 @@ text_sensor:
             result[len * 2] = result[len / 2];
             id(robot_skey) = std::string(result);
 
+  - platform: uptime
+    name: "Uptime"
+
+  - platform: debug
+    reset_reason:
+      name: "Reset Reason"
 
   - platform: template
     id: robotModel
@@ -916,146 +1312,182 @@ text_sensor:
     name: "Robot State"
     id: robotState
 
-
 switch:
   - platform: template
     name: "Test Mode"
-    # optimistic: true
     id: testMode
+    optimistic: true
     turn_on_action:
       - uart.write: "TestMode On \n"
-      - delay: 500ms
+      - delay: 100ms
       - uart.write: "TestMode \n"
     turn_off_action:
       - uart.write: "TestMode Off \n"
-      - delay: 500ms
+      - delay: 100ms
       - uart.write: "TestMode \n"
+      - delay: 100ms 
     entity_category: "diagnostic"
 
   - platform: template
     name: "Play Extra Sounds"
-    optimistic: true
     id: switch_play_extra_sounds
+    optimistic: true
+    lambda: |-
+      return id(g_play_extra_sounds);
     turn_on_action:
       - lambda: 'id(g_play_extra_sounds) = true;'
     turn_off_action:
       - lambda: 'id(g_play_extra_sounds) = false;'
     entity_category: "diagnostic"
 
-  # --- SetUserSettings ---
+  # --- SetUserSettings with Persistence (Optimistic Mode) ---
+  
   - platform: template
     name: "Click sounds"
-    optimistic: true
     id: clickSounds
+    optimistic: true
+    lambda: |-
+      return id(g_click_sounds);
     turn_on_action:
+      - lambda: 'id(g_click_sounds) = true;'
       - uart.write: "SetUserSettings ButtonClick ON \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     turn_off_action:
+      - lambda: 'id(g_click_sounds) = false;'
       - uart.write: "SetUserSettings ButtonClick OFF \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     entity_category: "diagnostic"
 
   - platform: template
     name: "LED"
-    optimistic: true
     id: led
+    optimistic: true
+    lambda: |-
+      return id(g_led);
     turn_on_action:
+      - lambda: 'id(g_led) = true;'
       - uart.write: "SetUserSettings StealthLED ON \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     turn_off_action:
+      - lambda: 'id(g_led) = false;'
       - uart.write: "SetUserSettings StealthLED OFF \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     entity_category: "diagnostic"
 
   - platform: template
     name: "Wall Enable"
-    optimistic: true
     id: wallEnable
+    optimistic: true
+    lambda: |-
+      return id(g_wall_enable);
     turn_on_action:
+      - lambda: 'id(g_wall_enable) = true;'
       - uart.write: "SetUserSettings WallEnable ON \n"
       - delay: 100ms
-      - uart.write: "GetUserSettings \n"
     turn_off_action:
+      - lambda: 'id(g_wall_enable) = false;'
       - uart.write: "SetUserSettings WallEnable OFF \n"
       - delay: 100ms
-      - uart.write: "GetUserSettings \n"
     entity_category: "diagnostic"
 
   - platform: template
     name: "Eco Mode"
-    optimistic: true
     id: ecoMode
+    optimistic: true
+    lambda: |-
+      return id(g_eco_mode);
     turn_on_action:
+      - lambda: 'id(g_eco_mode) = true;'
       - uart.write: "SetUserSettings EcoMode ON \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     turn_off_action:
+      - lambda: 'id(g_eco_mode) = false;'
       - uart.write: "SetUserSettings EcoMode OFF \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     entity_category: "diagnostic"
 
   - platform: template
     name: "IntenseClean"
-    optimistic: true
     id: intenseClean
+    optimistic: true
+    lambda: |-
+      return id(g_intense_clean);
     turn_on_action:
+      - lambda: 'id(g_intense_clean) = true;'
       - uart.write: "SetUserSettings IntenseClean ON \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     turn_off_action:
+      - lambda: 'id(g_intense_clean) = false;'
       - uart.write: "SetUserSettings IntenseClean OFF \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     entity_category: "diagnostic"
 
   - platform: template
     name: "WiFi"
-    optimistic: true
     id: wifiOnOff
+    optimistic: true
+    lambda: |-
+      return id(g_wifi_onoff);
     turn_on_action:
+      - lambda: 'id(g_wifi_onoff) = true;'
       - uart.write: "SetUserSettings WiFi ON \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     turn_off_action:
+      - lambda: 'id(g_wifi_onoff) = false;'
       - uart.write: "SetUserSettings WiFi OFF \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     entity_category: "diagnostic"
 
   - platform: template
     name: "Melody Sounds"
-    optimistic: true
     id: melodySounds
+    optimistic: true
+    lambda: |-
+      return id(g_melody_sounds);
     turn_on_action:
+      - lambda: 'id(g_melody_sounds) = true;'
       - uart.write: "SetUserSettings Melodies ON \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     turn_off_action:
+      - lambda: 'id(g_melody_sounds) = false;'
       - uart.write: "SetUserSettings Melodies OFF \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     entity_category: "diagnostic"
 
   - platform: template
     name: "Warning Sounds"
-    optimistic: true
     id: warningSounds
+    optimistic: true
+    lambda: |-
+      return id(g_warning_sounds);
     turn_on_action:
+      - lambda: 'id(g_warning_sounds) = true;'
       - uart.write: "SetUserSettings Warnings ON \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     turn_off_action:
+      - lambda: 'id(g_warning_sounds) = false;'
       - uart.write: "SetUserSettings Warnings OFF \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     entity_category: "diagnostic"
 
   - platform: template
     name: "Bin Full Detect"
-    optimistic: true
     id: binFullDetect
+    optimistic: true
+    lambda: |-
+      return id(g_bin_full_detect);
     turn_on_action:
+      - lambda: 'id(g_bin_full_detect) = true;'
       - uart.write: "SetUserSettings BinFullDetect ON \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     turn_off_action:
+      - lambda: 'id(g_bin_full_detect) = false;'
       - uart.write: "SetUserSettings BinFullDetect OFF \n"
-      - script.execute: get_user_settings
+      - delay: 100ms
     entity_category: "diagnostic"
 
-
 number:
-  # --- Spot cleaning ---
+
   - platform: template
     id: spot_width
     min_value: 100
@@ -1076,37 +1508,49 @@ number:
     name: Spot Clean Height
     optimistic: true
 
-
 select:
+
   - platform: logger
     name: "Logger select"
 
   - platform: template
     name: "Navigation Mode"
     id: navigationMode
-    optimistic: true
+    optimistic: false
     options:
       - "Normal"
       - "Gentle"
       - "Deep"
       - "Quick"
     icon: "mdi:robot-vacuum"
-    on_value:
+    lambda: |-
+      return id(g_navigation_mode);
+    set_action:
       then:
+        - lambda: 'id(g_navigation_mode) = x;'
         - uart.write: !lambda |-
             std::string cmd = std::string("SetNavigationMode ") + x + "\n";
             return std::vector<uint8_t>(cmd.begin(), cmd.end());
 
-
 button:
+  # ============================================================================
+  # Cleaning buttons - restore settings before starting
+  # ============================================================================
+  
   - platform: template
     name: "House Clean"
     id: houseClean
     icon: mdi:home
     on_press:
-      - script.execute:
-          id: play_extra_sounds
-          soundid: 1
+      # Ensure settings are correct BEFORE starting clean
+      - logger.log:
+          level: INFO
+          tag: clean
+          format: "House Clean - Restoring settings first"
+      - script.execute: quick_restore_user_settings
+      - delay: 600ms  # Wait for quick restore (~500ms + buffer)
+      
+      # Now start cleaning with correct settings
       - script.execute:
           id: send_event
           event: "UIMGR_EVENT_SMARTAPP_START_HOUSE_CLEANING"
@@ -1115,9 +1559,15 @@ button:
     name: "Spot Clean"
     icon: mdi:target
     on_press:
-      - script.execute:
-          id: play_extra_sounds
-          soundid: 1
+      # Ensure settings are correct BEFORE starting clean
+      - logger.log:
+          level: INFO
+          tag: clean
+          format: "Spot Clean - Restoring settings first"
+      - script.execute: quick_restore_user_settings
+      - delay: 600ms
+      
+      # Now start cleaning
       - script.execute:
           id: send_event
           event: "UIMGR_EVENT_SMARTAPP_START_SPOT_CLEANING"
@@ -1126,15 +1576,42 @@ button:
     name: "Spot Clean (Height & Width)"
     icon: mdi:target
     on_press:
-      then:
-        - uart.write: !lambda |-
-            // Convert numbers to integers
-            int w = (int) id(spot_width).state;
-            int h = (int) id(spot_height).state;
+      # Ensure settings are correct BEFORE starting clean
+      - logger.log:
+          level: INFO
+          tag: clean
+          format: "Spot Clean H/W - Restoring settings first"
+      - script.execute: quick_restore_user_settings
+      - delay: 600ms
+      
+      # Now start cleaning
+      - uart.write: !lambda |-
+          int w = (int) id(spot_width).state;
+          int h = (int) id(spot_height).state;
+          std::string cmd = "Clean Spot Width " + std::to_string(w) + " Height " + std::to_string(h) + "\n";
+          id(play_extra_sounds)->execute(1);
+          return std::vector<uint8_t>(cmd.begin(), cmd.end());
 
-            std::string cmd = "Clean Spot Width " + std::to_string(w) + " Height " + std::to_string(h) + "\n";
-            id(play_extra_sounds)->execute(1);
-            return std::vector<uint8_t>(cmd.begin(), cmd.end());
+  - platform: template
+    name: "Start Manual Cleaning"
+    icon: mdi:play-circle
+    on_press:
+      # Ensure settings are correct BEFORE starting clean
+      - logger.log:
+          level: INFO
+          tag: clean
+          format: "Manual Clean - Restoring settings first"
+      - script.execute: quick_restore_user_settings
+      - delay: 600ms
+      
+      # Now start cleaning
+      - script.execute:
+          id: send_event
+          event: "UIMGR_EVENT_SMARTAPP_START_MANUAL_CLEANING"
+
+  # ============================================================================
+  # Other cleaning control buttons (no restore needed)
+  # ============================================================================
 
   - platform: template
     name: "Stop Cleaning"
@@ -1172,8 +1649,12 @@ button:
     name: "Locate Robot"
     icon: mdi:volume-high
     on_press:
-      - uart.write: "PlaySound SoundId 20 \n"  
+      - uart.write: "PlaySound SoundId 20 \n"
 
+  # ============================================================================
+  # Manual drive buttons
+  # ============================================================================
+  
   - platform: template
     name: "Manual Drive Forward Up"
     icon: mdi:arrow-up
@@ -1278,13 +1759,9 @@ button:
           id: send_event
           event: "UIMGR_EVENT_SMARTAPP_DRIVE_MANUAL_BTN_TIMEOUT"
 
-  - platform: template
-    name: "Start Manual Cleaning"
-    icon: mdi:play-circle
-    on_press:
-      - script.execute:
-          id: send_event
-          event: "UIMGR_EVENT_SMARTAPP_START_MANUAL_CLEANING"
+  # ============================================================================
+  # Diagnostic buttons
+  # ============================================================================
 
   - platform: template
     name: "Update status"
@@ -1317,4 +1794,3 @@ button:
 
   - platform: restart
     name: Reboot ESP
-
