@@ -60,7 +60,7 @@ wifi:
 
   # If your router sets another TLD for local devices, specify that here
   #domain: .lan
-  # If you are having issues with the dns or are 100% this will be the ip, you can spesify that here
+  # If you are having issues with the dns or are 100% this will be the ip, you can specify that here
   #use_address: 192.168.205.199
 
 captive_portal:
@@ -1141,12 +1141,6 @@ sensor:
     name: "Last cleaning duration"
     id: last_cleaning_duration
     unit_of_measurement: "min"
-
-  - platform: adc
-    pin: GPIO36
-    name: "Vcc"
-    update_interval: 1s
-    attenuation: 12db
 
 binary_sensor:
 
