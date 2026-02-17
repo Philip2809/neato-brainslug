@@ -1,5 +1,5 @@
-# THIS IS A BETA VERSION! IT MAY BE UNSABLE OR NOT WORKING, FOR THE LATEST PLEASE DOWNLOAD FROM RELEASES!
 type: vertical-stack
+title: Neato Vacuum
 variables:
   NOTE: >
     Combatability between esphome config and this card is ensured as long as the
@@ -8,8 +8,8 @@ variables:
     not promised. Please try to keep the versions the same, and check the github
     for updates!
   project: philip2809.neato-connected
-  version: "1.2-b.7"
-  type: "gen3"
+  version: 1.2-b.7
+  type: gen3
 cards:
   - type: custom:button-card
     variables:
@@ -39,6 +39,10 @@ cards:
         else if (uiState.includes('STATE_STARTSPOTCLEANING')) return 'Starting Spot Clean';
         else if (uiState.includes('STATE_SPOTCLEANINGRUNNING')) return 'Spot Cleaning';
         else if (uiState.includes('STATE_SPOTCLEANINGPAUSED')) return 'Spot Cleaning Paused';
+
+        else if (uiState.includes('STATE_DOCKINGRUNNING')) return 'Returning to Base'; 
+        else if (uiState.includes('STATE_CLEANINGSUSPENDED')) return 'Charging to continue';
+        else if (uiState.includes('STATE_DOCKINGPAUSED')) return 'Docking Paused';
 
         else return uiState || 'Unknown';
       ]]]
@@ -295,18 +299,17 @@ cards:
         conditions:
           - condition: and
             conditions:
-              - condition: state
-                entity: sensor.neato_vacuum_ui_state
-                state_not: UIMGR_STATE_HOUSECLEANINGPAUSED
-              - condition: state
-                entity: sensor.neato_vacuum_ui_state
-                state_not: UIMGR_STATE_HOUSECLEANINGRUNNING
-              - condition: state
-                entity: sensor.neato_vacuum_ui_state
-                state_not: UIMGR_STATE_SPOTCLEANINGPAUSED
-              - condition: state
-                entity: sensor.neato_vacuum_ui_state
-                state_not: UIMGR_STATE_SPOTCLEANINGRUNNING
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity: sensor.neato_vacuum_ui_state
+                    state: UIMGR_STATE_IDLE
+                  - condition: state
+                    entity: sensor.neato_vacuum_ui_state
+                    state: UIMGR_STATE_STANDBY
+                  - condition: state
+                    entity: sensor.neato_vacuum_ui_state
+                    state: UIMGR_STATE_TESTMODE
         card:
           type: custom:button-card
           variables:
@@ -320,11 +323,32 @@ cards:
           - condition: or
             conditions:
               - condition: state
+                entity: sensor.neato_vacuum_robot_alert
+                state_not: 200 -  (UI_ALERT_INVALID)
+              - condition: state
+                entity: sensor.neato_vacuum_robot_error
+                state_not: 200 -  (UI_ALERT_INVALID)
+        card:
+          type: custom:button-card
+          variables:
+            robot_id: neato_vacuum
+          entity: "[[[ return `button.${variables.robot_id}_clear_errors`; ]]]"
+          name: Clear Errors
+          tap_action:
+            action: toggle
+      - type: conditional
+        conditions:
+          - condition: or
+            conditions:
+              - condition: state
                 entity: sensor.neato_vacuum_ui_state
                 state: UIMGR_STATE_HOUSECLEANINGPAUSED
               - condition: state
                 entity: sensor.neato_vacuum_ui_state
                 state: UIMGR_STATE_SPOTCLEANINGPAUSED
+              - condition: state
+                entity: sensor.neato_vacuum_ui_state
+                state: UIMGR_STATE_DOCKINGPAUSED
         card:
           type: custom:button-card
           variables:
@@ -343,6 +367,9 @@ cards:
               - condition: state
                 entity: sensor.neato_vacuum_ui_state
                 state: UIMGR_STATE_SPOTCLEANINGRUNNING
+              - condition: state
+                entity: sensor.neato_vacuum_ui_state
+                state: UIMGR_STATE_DOCKINGRUNNING
         card:
           type: custom:button-card
           variables:
@@ -355,18 +382,17 @@ cards:
         conditions:
           - condition: and
             conditions:
-              - condition: state
-                entity: sensor.neato_vacuum_ui_state
-                state_not: UIMGR_STATE_HOUSECLEANINGPAUSED
-              - condition: state
-                entity: sensor.neato_vacuum_ui_state
-                state_not: UIMGR_STATE_HOUSECLEANINGRUNNING
-              - condition: state
-                entity: sensor.neato_vacuum_ui_state
-                state_not: UIMGR_STATE_SPOTCLEANINGPAUSED
-              - condition: state
-                entity: sensor.neato_vacuum_ui_state
-                state_not: UIMGR_STATE_SPOTCLEANINGRUNNING
+              - condition: or
+                conditions:
+                  - condition: state
+                    entity: sensor.neato_vacuum_ui_state
+                    state: UIMGR_STATE_IDLE
+                  - condition: state
+                    entity: sensor.neato_vacuum_ui_state
+                    state: UIMGR_STATE_STANDBY
+                  - condition: state
+                    entity: sensor.neato_vacuum_ui_state
+                    state: UIMGR_STATE_TESTMODE
         card:
           type: custom:button-card
           variables:
@@ -405,16 +431,22 @@ cards:
             conditions:
               - condition: state
                 entity: sensor.neato_vacuum_ui_state
-                state: UIMGR_STATE_HOUSECLEANINGPAUSED
-              - condition: state
-                entity: sensor.neato_vacuum_ui_state
-                state: UIMGR_STATE_SPOTCLEANINGPAUSED
-              - condition: state
-                entity: sensor.neato_vacuum_ui_state
                 state: UIMGR_STATE_HOUSECLEANINGRUNNING
               - condition: state
                 entity: sensor.neato_vacuum_ui_state
                 state: UIMGR_STATE_SPOTCLEANINGRUNNING
+              - condition: state
+                entity: sensor.neato_vacuum_ui_state
+                state: UIMGR_STATE_CLEANINGSUSPENDED
+              - condition: state
+                entity: sensor.neato_vacuum_ui_state
+                state: UIMGR_STATE_DOCKINGRUNNING
+              - condition: state
+                entity: sensor.neato_vacuum_ui_state
+                state: UIMGR_STATE_HOUSECLEANINGPAUSED
+              - condition: state
+                entity: sensor.neato_vacuum_ui_state
+                state: UIMGR_STATE_SPOTCLEANINGPAUSED
         card:
           type: custom:button-card
           variables:
@@ -432,8 +464,23 @@ cards:
           action: toggle
       - type: conditional
         conditions:
-          - entity: binary_sensor.neato_vacuum_ext_power_present
-            state_not: "on"
+          - condition: or
+            conditions:
+              - condition: state
+                entity: sensor.neato_vacuum_ui_state
+                state: UIMGR_STATE_HOUSECLEANINGRUNNING
+              - condition: state
+                entity: sensor.neato_vacuum_ui_state
+                state: UIMGR_STATE_SPOTCLEANINGRUNNING
+              - condition: state
+                entity: sensor.neato_vacuum_ui_state
+                state: UIMGR_STATE_HOUSECLEANINGPAUSED
+              - condition: state
+                entity: sensor.neato_vacuum_ui_state
+                state: UIMGR_STATE_SPOTCLEANINGPAUSED
+              - condition: state
+                entity: sensor.neato_vacuum_ui_state
+                state: UIMGR_STATE_CLEANINGSUSPENDED
         card:
           type: custom:button-card
           entity: button.neato_vacuum_send_to_base
@@ -541,8 +588,22 @@ cards:
                         name: Robot Time
                       - entity: >-
                           [[[ return
+                          `sensor.${variables.robot_id}_reset_reason`;]]]
+                        name: Restart Reason
+                      - entity: "[[[ return `sensor.${variables.robot_id}_uptime`;]]]"
+                        name: ESP Uptime
+                      - entity: >-
+                          [[[ return
                           `sensor.${variables.robot_id}_battery_voltage_v`;]]]
                         name: Battery Voltage
+                      - entity: >-
+                          [[[ return
+                          `sensor.${variables.robot_id}_last_cleaning_duration`;]]]
+                        name: Last Run Clean Time
+                      - entity: >-
+                          [[[ return
+                          `sensor.${variables.robot_id}_last_cleaning_time`;]]]
+                        name: Last Clean Time
                       - entity: >-
                           [[[ return
                           `sensor.${variables.robot_id}_battery_temp_c_avg`;]]]
