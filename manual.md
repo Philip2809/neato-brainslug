@@ -18,6 +18,11 @@ Some of the features of the robot is detailed here. The pictures here show the w
 ## Robot settings
 ![](./pics/esphome/webserver/robot-settings.png)
 - These are the settings exposed by the robot, the settings is a little different based on your robot generation, but it's a hit or miss based on what setting does anything or if it applies correctly
+- `gen3` robots have the "Navigation Mode" option, while it needs to be verified more an idea based on some observations the different modes could mean. The mode needs to be reselected after each restart of the robot
+    - `gentle` - the bot shouldn't push any object that is higher than itself (visible via the lidar).
+    - `deep` - the robot will drive into the corners as deep as it can, drive a bit backwards and then clean the corners in a curve. 
+- `Intense clean` - reduced the distance between the lanes
+- `Wall Enable/Follower` - follows all walls one round and starts cleaning 'senseful' areas. No wall follower will follow the wall for a distance and then start cleaning the area before following the wall for the next area.
 
 ## Manual driving
 ![](./pics/esphome/webserver/manual-driving.png)
