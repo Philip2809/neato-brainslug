@@ -22,8 +22,8 @@ _Control your Neato vacuum locally with an ESPHome brainslug_
         FAQ
       </a>
       <span> | </span>
-      <a href="demo.md">
-        Demo
+      <a href="manual.md">
+        Manual
       </a>
       <span> | </span>
       <a href="#beta">
