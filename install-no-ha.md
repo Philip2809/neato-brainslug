@@ -15,10 +15,12 @@ You can also use this repair without Home Assistant, however future versions of 
 
 ### Step 1
 I have made some prebuilt images for reccomended ESP32s, however, if you have another ESP32 that is not listed here, ask me and I will build you one!
-# TODO: add links
-- ESP32
-- ESP32-S3
-- ESP32-C3
+ `gen2`  | `gen3` |
+|---|---|
+| [ESP32](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen2-esp32.factory.bin) | [ESP32](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen3-esp32.factory.bin) |
+| [ESP32-S3](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen2-esp32-s3.factory.bin) | [ESP32-S3](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen3-esp32-s3.factory.bin) |
+| [ESP32-C3](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen2-esp32-c3.factory.bin) | [ESP32-C3](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen3-esp32-c3.factory.bin) |
+
 
 **If your ESP device does not have GPIO 17 and 16, please ask me for a build!**
 
@@ -77,13 +79,12 @@ Now lets install the ESP device:
 Now you can enjoy your locally controllable neato vacuum cleaner!
 
 Eventually there will be updates, either as new features or stability fixes, however all of this connecting and flashing will no longer be required since ESPHome have support for OTA-updates. To update when a new version comes out you will need to:
-1. Download the OTA update file from (github releases)[add link]
-    
-    Downloads for recommended ESP32 devices is here:
-    # TODO: add links
-    - ESP32
-    - ESP32-S3
-    - ESP32-C3
+1. Download the OTA update file for your device, recommended ESP32 devices is here:
+    |`gen2`  | `gen3` |
+    |---|---|
+    | [ESP32](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen2-esp32.ota.bin) | [ESP32](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen3-esp32.ota.bin) |
+    | [ESP32-S3](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen2-esp32-s3.ota.bin) | [ESP32-S3](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen3-esp32-s3.ota.bin) |
+    | [ESP32-C3](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen2-esp32-c3.ota.bin) | [ESP32-C3](https://github.com/philip2809/neato-connected/releases/latest/download/nbs-gen3-esp32-c3.ota.bin) |
 2. Go to the webserver of the device and upload the file under the OTA section, then press "UPDATE"
     ![OTA update](pics/setup/step_6-webserver-ota.png)
 3. Wait for it to update and restart then refresh the page, you should now be on the latest version!
