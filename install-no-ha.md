@@ -55,7 +55,7 @@ When you have navigated to the site of the ESP device it should look something l
 This is the webserver of the device. It will show up as not "loading..." since we are not connected to the robot, we are only connected to a power source so that the ESP device can be configured. Now you can connect the device to the robot via the debug port to make sure that it works are you want to! To do this:
 1. Turn the robot off
 2. Take of the bumper of the robot
-3. Connect to the robot
+3. Connect to the robot - if you have an `gen2` robot, proceed to [the install guide](./install-esp-device-gen2.md)
     | Robot | ESP |
     |---|---|
     |RX|GPIO17|
@@ -65,12 +65,13 @@ This is the webserver of the device. It will show up as not "loading..." since w
 
     ![Connection diagram](pics/setup/step_4-connection-diagram.png)
 4. Turn the robot back on, this should power up the ESP device and you can now go to the webserver interface page we saw before and the data from the robot should now show up!
-    ![Webserver connected](pics/setup/-step_4-webserver-connected.png)
+    ![Webserver connected](pics/setup/step_4-webserver-connected.png)
 5. Click the different buttons to make sure that it works, if you have a gen3 robot, drive it around with the manual mode!
 
 ### Step 5
-
-And once you are ready for the permanent installation, go here: [Permanent installation](./install-internally.md)
+Now lets install the ESP device:
+- [`gen2`](./install-esp-device-gen2.md)
+- [`gen3`](./install-esp-device-gen3.md)
 
 ### Step 6
 Now you can enjoy your locally controllable neato vacuum cleaner!

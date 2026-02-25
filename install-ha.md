@@ -95,7 +95,7 @@ When you have navigated to the site of the ESP device it should look something l
 This is the webserver of the device. It will show up as not connected since we are not connected to the robot, we are only connected to a power source so that the ESP device can be configured. Now you can connect the device to the robot via the debug port to make sure that it works are you want to! To do this:
 1. Turn the robot off
 2. Take of the bumper of the robot
-3. Connect to the robot
+3. Connect to the robot - if you have an `gen2` robot, proceed to [the install guide](./install-esp-device-gen2.md)
     | Robot | ESP |
     |---|---|
     |RX|GPIO17|
@@ -190,10 +190,9 @@ Remove the alert part in case you don't have a gen3 robot. You can also use the 
 ## Step 7
 **Before you make a permanent installation, make sure it all works via Home Assistant as you want it to!**
 
+Now lets install the ESP device:
+- [`gen2`](./install-esp-device-gen2.md)
+- [`gen3`](./install-esp-device-gen3.md)
 
 ## Step 8
 Now you can enjoy your locally controllable neato vacuum cleaner! Of course there is some quirks with this repair, however we feel they are worth the ability to regain functionality.
-
-Missing features or annoying workarounds:
-- Haven't found a way to tell the robot to dock via the serial interface
-- Once in cleaning paused/running mode, to get the robot back into standby/idle, you need to either hold the button on the robot, or press the "STOP" button in home assistant, which will reboot the robot. You can also let the cleaning finish of course.
