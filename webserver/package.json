@@ -1,0 +1,13 @@
+{
+  "name": "esphome-webserver",
+  "version": "3.0.0",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build:packages",
+    "build:packages": "npm run build --workspaces --if-present",
+    "deploy": "npm run deploy --workspaces --if-present"
+  }
+}

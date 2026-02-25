@@ -1,0 +1,89 @@
+/* First, declare your dark mode colors */
+:root {
+  --c-bg: #fff;
+  --c-text: #000;
+  --c-primary: #26a69a;
+  --color:0, 100%;
+  --l:50%;
+  --color-primary: #26a69a;
+
+  --color-primary-darker: hsl(var(--color),calc(var(--l) - 5%));
+  --color-primary-darkest: hsl(var(--color),calc(var(--l) - 10%));
+  --color-text: #5b3e81;
+  --color-text-rgb: 47, 6, 100;
+  --color-primary-lighter: rgba(var(--color-text-rgb), 50%);
+  --color-slider-thingy: 38, 166, 154;
+
+  --primary-color: hsla(323, 18%, 49%, 0.924);
+  --dark-primary-color: #0288d1;
+  --light-primary-color: #b3e5fC;
+  --c-pri-rgb: 3, 169, 244;
+  --c-pri: rgba(var(--c-pri-rgb),100%);
+  --c-pri-l: rgba(var(--c-pri-rgb), 50%);
+  --c-pri-d: hsl(var(--c-pri-rgb),calc(var(--l) - 5%);
+  --color-primary-lighter2: rgba(var(--c-pri), 50%));
+
+  font-size: 62.5%!important;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-bg: #1c1c1c;
+    --c-text: #fff;
+  }
+}
+
+html[color-scheme="dark"] img {
+  filter: invert(100%);
+}
+
+/* For browsers that don’t support `color-scheme` and therefore
+   don't handle system dark mode for you automatically
+   (Firefox), handle it for them. */
+@supports not (color-scheme: light dark) {
+  html {
+    background: var(--c-bg);
+    color: var(--c-text);
+  }
+}
+
+/* For browsers that support automatic dark/light mode
+   As well as system colors, set those */
+@supports (color-scheme: light dark)
+  and (background-color: Canvas)
+  and (color: CanvasText) {
+  :root {
+    --c-bg: Canvas;
+    --c-text: ButtonText;
+  }
+}
+
+/* For Safari on iOS. Hacky, but it works. */
+@supports (background-color: -apple-system-control-background)
+  and (color: text) {
+  :root {
+    --c-bg: -apple-system-control-background;
+    --c-text: text;
+  }
+}
+
+html {
+    color-scheme: light dark;
+    font-family: ui-monospace, system-ui, "Helvetica", "Arial Narrow", "Roboto", "Oxygen", "Ubuntu", sans-serif;
+}
+
+html button, html .btn {
+  cursor: pointer;
+  border-radius: 1rem;
+  background-color: inherit;
+  background-image: linear-gradient(0deg, rgba(127, 127, 127, 0.5) 0%, rgba(127, 127, 127, 0.5) 100%);
+  color: inherit;
+  border: 1px solid rgba(127, 127, 127, 0.5);
+  height: 1.2rem;
+}
+
+html * {
+  transition-property: color;
+  transition-duration: 450ms !important;
+  transition-timing-function: ease !important;
+  transition-delay: 0s !important;
+}
