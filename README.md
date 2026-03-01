@@ -152,4 +152,4 @@ Analyzing Security in a Hardened IoT Ecosystem](https://www.usenix.org/system/fi
 - [@algaen](https://github.com/algaen) for the info about the D8 (D9, D10?) robots
 - [@tomwj](https://github.com/tomwj) for testing and pictures installing it internally in a D7
 - [@RobertSundling](https://github.com/RobertSundling) for the [firmware files](https://github.com/RobertSundling/neato-botvac)
-
+- [@mikeyp] for the amazing logo
