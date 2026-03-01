@@ -21,7 +21,7 @@ substitutions:
   reboot_timeout: 15min # if you have Home Assistant but not always connected, put this to "0s" to disable it, the esp will only reboot if the api connection is lost, after the time specified here
 
   # ---- Version and robot type ----
-  version: "1.2-b.7" # THIS IS A BETA VERSION!
+  version: "1.2"
   type: "gen2"
   buildinfo: "${version}-[${uart_tx}/${uart_rx}]"
   # --------------------------------
@@ -32,7 +32,7 @@ substitutions:
 # If you don't want the webserver, uncomment/remove this part
 web_server:
   port: 80
-  js_url: "https://cdn.jsdelivr.net/gh/philip2809/neato-brainslug@next/docs/esphome-config/1.2-b.7.js"
+  js_url: "https://cdn.jsdelivr.net/gh/philip2809/neato-brainslug@main/config/js/1.2.js"
 
 logger:
   baud_rate: 0
@@ -58,7 +58,6 @@ captive_portal:
 
 esphome:
   name: neato-vacuum # If you want another name, change it here, remeber to replace it in the ha-card.yaml!
-  name_add_mac_suffix: False # If you have multiple deivces and don't change the names you can also enable this! (Used for the prebuilt images)
 ##############################################################################################################################
 
 #   Combatability between esphome config and this card is ensured as long as the
