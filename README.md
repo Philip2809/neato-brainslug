@@ -106,15 +106,7 @@ The reason this works on all neato robots is because they all have the command i
 
 To get this up and running you will need to connect to the debug port or usb port on the robot. The XV-series robots have the usb port on the back, the rest has it in the dustbin area, making it inaccicible when using, for these robots we need to connect via the serial debug port, you would also need to do this if you are installing it internally inside the XV-series. So sadly for this repair you will need to get some extra hardware to get it up and running; however we are happy to help you out any step along the way!
 
-First of all we need to get the version of your robot; to do this do the following:
-
-0. You will need to use a Chromium based browser, e.g. Chrome
-1. Connect to the USB port of your robot
-2. Go to https://www.serialterminal.com/
-3. Set the `Buad` to `115200`
-4. Click `Connect` and select your vacuum
-5. Send the commmand `GetVersion`
-6. Look for the line with `Software`, this should be `Software,X,X,X,X,X`
+First of all we need to get the version of your robot, do this at the [Version Checker](https://brainslug.phma.dev/version.html)
 
 Since we are parsing the data from the serial interface we need to be on the same verion of the robot firmware, this is what has been confirmed working:
 | `gen2`  | `gen3` |
