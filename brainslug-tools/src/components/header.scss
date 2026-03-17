@@ -7,6 +7,7 @@
     align-items: center;
 
     & > * {
+        flex: 1;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -23,7 +24,6 @@
         border-radius: 8px;
         cursor: pointer;
         transition: all 0.2s ease-in-out;
-        max-width: fit-content;
         margin: 0 auto;
 
         &:hover {
@@ -38,6 +38,14 @@
             transform: translateY(0);
             box-shadow: none;
         }
+    }
+
+    a {
+        color: #e0e0e0;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .logo {

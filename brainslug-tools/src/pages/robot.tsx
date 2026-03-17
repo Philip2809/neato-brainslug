@@ -1,12 +1,20 @@
-import { useState, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import './robot.scss';
 import { connectToRobot, robot, subscribeToRobot, getRobotUpdateTick } from '../logic/connect';
 import type { DataKeyData } from '../logic/robot';
 import TimeAgo from 'react-timeago';
+import { useNavigate } from 'react-router-dom';
 
 function Robot() {
   const [status, setStatus] = useState<string>('Not connected');
   const [filterResults, setFilterResults] = useState(false);
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!('serial' in navigator)) {
+      navigate('/unsupported', { replace: true });
+    }
+  }, [navigate]);
 
   // Just use the external store to subscribe to a simple "update tick" counter.
   // When 'updateRobotStore()' is called, the tick increases, forcing React to rerender.

@@ -1,0 +1,31 @@
+.home {
+    text-align: center;
+    max-width: 800px;
+
+    p {
+        font-size: 1.8rem;
+        color: #aaa;
+        line-height: 1.7;
+    }
+
+    a {
+        color: #5ac060;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease-in-out;
+
+        &:hover {
+            color: #7cd080;
+        }
+    }
+
+    strong {
+        color: #e0e0e0;
+    }
+
+    .success {
+        font-size: 2.2rem;
+        font-weight: 600;
+        color: #5ac060;
+    }
+}
