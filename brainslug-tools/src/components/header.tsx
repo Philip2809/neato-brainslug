@@ -25,6 +25,7 @@ function Header() {
             </div>
             <div>
                 <button className="nav-btn" onClick={() => navigate('/flash')}>ESP Flasher</button>
+                {/* <button className="nav-btn" onClick={() => navigate('/ha-config')}>HA Config</button> */}
             </div>
         </div>
     )

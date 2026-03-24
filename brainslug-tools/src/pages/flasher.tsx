@@ -79,6 +79,8 @@ export default Flasher
 
 function createManifest(gen: number) {
   const genstr = gen === 2 ? 'gen2' : 'gen3';
+  const getUrl = (filename: string) => new URL(filename, window.location.href).href;
+
   const manifest = {
     "name": `Neato Brainslug - ${genstr.toUpperCase()}`,
     "version": "1.2.1",
@@ -89,7 +91,7 @@ function createManifest(gen: number) {
         "chipFamily": "ESP32",
         "parts": [
           {
-            "path": `nbs-${genstr}-esp32.factory.bin`,
+            "path": getUrl(`/webflash/nbs-${genstr}-esp32.factory.bin`),
             "offset": 0
           }
         ]
@@ -98,7 +100,7 @@ function createManifest(gen: number) {
         "chipFamily": "ESP32-S3",
         "parts": [
           {
-            "path": `nbs-${genstr}-esp32s3.factory.bin`,
+            "path": getUrl(`/webflash/nbs-${genstr}-esp32s3.factory.bin`),
             "offset": 0
           }
         ]
@@ -107,7 +109,7 @@ function createManifest(gen: number) {
         "chipFamily": "ESP32-C3",
         "parts": [
           {
-            "path": `nbs-${genstr}-esp32c3.factory.bin`,
+            "path": getUrl(`/webflash/nbs-${genstr}-esp32c3.factory.bin`),
             "offset": 0
           }
         ]

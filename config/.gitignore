@@ -4,4 +4,5 @@
 .esphome/
 secrets.yaml
 
+dev.factory.bin
 dev.ota.bin
