@@ -13,9 +13,9 @@ packages:
   - !include ../boards/esp32c3.yaml
   # - !include ../boards/esp32s3.yaml
 
-  # - !include ../ha.yaml
-  - !include ../no-ha.yaml
+  # - !include ../comp/ha.yaml
+  - !include ../comp/no-ha.yaml
 
-  - !include ../webserver.yaml
-  - !include ../gen3.yaml
-  # - !include ../gen2.yaml
+  - !include ../comp/webserver.yaml
+  - !include ../comp/gen3.yaml
+  # - !include ../comp/gen2.yaml

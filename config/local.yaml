@@ -13,15 +13,15 @@ substitutions:
   ha_encryption_key: !secret neato_vacuum_api
 
   ### If you want to change the UART Pins
-  uart_tx: 12
-  uart_rx: 13
+  # uart_tx: 12
+  # uart_rx: 13
 
 
 wifi:
   ### If your router sets another TLD for local devices, specify that here
-  domain: .lan
+  # domain: .lan
   ### If you are having issues with the dns or are 100% this will be the ip, you can spesify that here
-  use_address: 192.168.205.199
+  # use_address: 192.168.205.199
 
 
 
