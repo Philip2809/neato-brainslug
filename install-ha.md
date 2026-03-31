@@ -60,17 +60,31 @@ Once you have filled this file with your values, save it, and make sure to never
 If you want to add more devices, best practice is to set the api key and ota password in your secrets file. Your wifi password and ssid should also be kept here. Since the esp device will be strapped to, or inside the robot OTA (over the air) updates is quite important for this use case.
 
 ### Config file
-Download the ESPHome config based on the generation of your robot:
-- [`gen2`](https://github.com/philip2809/neato-brainslug/releases/latest/download/esphome_gen2.yaml)
-- [`gen3`](https://github.com/philip2809/neato-brainslug/releases/latest/download/esphome_gen3.yaml)
+[Download the ESPHome config file](https://github.com/philip2809/neato-brainslug/releases/latest/download/ha_esphome.yaml)
 
 Once back at the ESPHome main page, click the big green button in the bottom left to add a new device. Read the information, but for now, click "Continue" and either import the file you downloaded, or start with an empty configuration and paste the contents in. Open the file in edit mode in case it does not automatically open in edit mode.
 
 **The following two steps might be hard to do, feel free to ask for help in the discord or discussions.**
 
-Now, you will need to fill out some of the details in the configuration file, but the main parts is the platform type, pins for uart, name and ip settings if needed. If you are not using home assistant you will also need to configure the timezone platform. There is some additional help as comments in the configuration file.
+It should look something like this:
+![esphome config file](pics/setup/esphome-config-file.png)
 
-For this uart pins, this is highly dependent on your board, both based on which ones you can easily connect too, but also what is supported on your platform. In some cases, the pins labeled `TX` and `RX` cannot be used, as these are used to upload the firmware, you will need to find GPIO pins that support using using UART, on the ESP32 many of the GPIO pins can be used. There is many tutorials for the different boards, here is some common ones:
+Whatever text is in green, has the `#` in the begining is not used, the `#` marks the line as a comment, so whatever config you want needs to be in white, add a `#` to the begining of the line you don't want to include.
+
+Here you can easily change some parts, if you board type is not listed you will need to add something like:
+```yaml
+esp32:
+  variant: ESP32C3 # Change this to whatever you have!
+  framework:
+    type: esp-idf
+```
+to this config, I have included some common boards here.
+
+If you want change the name, if needed the ip address etc. If you want to use home assistant or just the webserver, if you have an gen3 or gen2 robot. 
+
+UART pins it is best to keep at default, 17 and 16 for most boards, the smaller C3 board the default is 7 and 6, however you can choose something else if you want in the config.
+
+In most cases, the pins labeled `TX` and `RX` cannot be used, as these are used to upload the firmware, you will need to find GPIO pins that support using using UART, on the ESP32 many of the GPIO pins can be used. There is many tutorials for the different boards, here is some common ones:
 - [ESP32](https://randomnerdtutorials.com/esp32-pinout-reference-gpios/)
 - [ESP8266](https://randomnerdtutorials.com/esp8266-pinout-reference-gpios/)
 
