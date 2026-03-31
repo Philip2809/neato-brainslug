@@ -1,7 +1,7 @@
 set -e
 
 docker compose up -d
-docker exec -i esphome_builder bash << 'EOF'
+docker exec -e DO_UPLOAD="$1" -i esphome_builder bash << 'EOF'
 set -e
 
 BUILT_OTA="/config/.esphome/build/neato-vacuum/.pioenvs/neato-vacuum/firmware.ota.bin"
@@ -19,7 +19,10 @@ cp $BUILT_FACTORY dev.factory.bin
 chown 1000:1000 dev.ota.bin
 chown 1000:1000 dev.factory.bin
 
-# curl -X POST "http://192.168.205.199/update" \
-#   -H "Accept: application/octet-stream" \
-#   -F "update=@./dev.ota.bin;type=application/octet-stream"
+if [ "$DO_UPLOAD" = "upload" ]; then
+  echo "Uploading to ESP..."
+  curl -X POST "http://192.168.205.199/update" \
+    -H "Accept: application/octet-stream" \
+    -F "update=@./dev.ota.bin;type=application/octet-stream"
+fi
 EOF

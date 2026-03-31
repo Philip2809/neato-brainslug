@@ -6,3 +6,4 @@ secrets.yaml
 
 dev.factory.bin
 dev.ota.bin
+dev.yaml
