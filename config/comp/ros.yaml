@@ -1,0 +1,16 @@
+
+
+external_components:
+  # - source: github://tube0013/esphome-stream-server-v2
+  - source: github://oxan/esphome-stream-server
+
+stream_server:
+  id: ss
+  buffer_size: 4096
+  uart_id: uart_bus
+  port: 6638
+
+# binary_sensor:
+#   - platform: stream_server
+#     stream_server: ss
+#     name: "ROS Stream Server Connected"

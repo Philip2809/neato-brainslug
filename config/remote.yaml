@@ -31,10 +31,10 @@ packages:
         # - config/boards/esp32s3.yaml
         - config/boards/esp32s2.yaml
 
-        - config/ha.yaml             # Remember to set wifi credentials and ha_encryption_key in the substitutions if you are using this
-        # - config/no-ha.yaml
+        - config/comp/ha.yaml             # Remember to set wifi credentials and ha_encryption_key in the substitutions if you are using this
+        # - config/comp/no-ha.yaml
 
-        - config/webserver.yaml
-        - config/gen3.yaml
-        # - config/gen2.yaml
-      ref: main
+        - config/comp/webserver.yaml
+        - config/comp/gen3.yaml
+        # - config/comp/gen2.yaml
+      ref: config
