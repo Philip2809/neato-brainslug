@@ -1,0 +1,8 @@
+esp32:
+  variant: ESP32C6
+  framework:
+    type: esp-idf
+
+substitutions:
+  uart_tx: 2
+  uart_rx: 3
