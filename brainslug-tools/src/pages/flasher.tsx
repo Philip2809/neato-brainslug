@@ -39,7 +39,7 @@ function Flasher() {
     <div className="card flasher">
       <p className="success">Brainslug Web Flasher</p>
       <p>
-        Select your Neato robot generation, D3-D7 robots are <code>gen3</code> and D70-D85 + BotVac Connected (wihtout D) is <code>gen2</code>.
+        Select your Neato robot generation, D3-D7 robots are <code>gen3</code> and D70-D85 + BotVac Connected (without D) is <code>gen2</code>.
         You can read more about the generations <a href="https://github.com/Philip2809/neato-brainslug/blob/main/README.md" target="_blank" rel="noopener noreferrer">on the GitHub</a>.
       </p>
 
@@ -110,6 +110,15 @@ function createManifest(gen: number) {
         "parts": [
           {
             "path": getUrl(`/webflash/nbs-${genstr}-esp32c3.factory.bin`),
+            "offset": 0
+          }
+        ]
+      },
+      {
+        "chipFamily": "ESP32-C6",
+        "parts": [
+          {
+            "path": getUrl(`/webflash/nbs-${genstr}-esp32c6.factory.bin`),
             "offset": 0
           }
         ]

@@ -1,0 +1,21 @@
+substitutions:
+  name: neato-vacuum # If you want another name, change it here, remeber to replace it in the ha-card.yaml!
+  comment: "" # If you want to write a comment about this vacuum, do so here. e.g. "Downstairs garage vacuum"
+
+  infointerval: 2sec
+  chargerinterval: 2min
+
+  ota_password: !secret brainslug_ota
+
+
+packages:
+  # - !include ../boards/esp32.yaml
+  - !include ../boards/esp32c6.yaml
+  # - !include ../boards/esp32s3.yaml
+
+  # - !include ../comp/ha.yaml
+  - !include ../comp/no-ha.yaml
+
+  - !include ../comp/webserver.yaml
+  - !include ../comp/gen3.yaml
+  # - !include ../comp/gen2.yaml
