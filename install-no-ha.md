@@ -15,7 +15,7 @@ You can also use this repair without Home Assistant, however future versions of 
 ### Step 1
 I have made some prebuilt images for recommended ESP32s, `ESP32`, `ESP32-S3` and `ESP32-C3`, if you have another ESP32 that is not listed here, ask me and I will build you one!
 
-The easiest way to flash your ESP device is with the Brainslug Web Flasher.
+The easiest way to flash your ESP device is with the [Brainslug Web Flasher](https://brainslug.phma.dev/).
 ![Brainslug Web Flasher](pics/setup/brainslug-web-flasher.png)
 
 1. Connect your device with a cable. (Note: many micro usb cables are power only, if one of your cables is not working, try another!)
