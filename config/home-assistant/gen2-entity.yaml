@@ -10,6 +10,17 @@
         {% else %}
             unknown
         {% endif %}"
+
+      battery_level: "{{ states('sensor.neato_vacuum_fuel_percent') | int }}"
+
+      fan_speed: "{{ states('select.neato_vacuum_navigation_mode') }}"
+
+      fan_speeds:
+        - Normal
+        - Gentle
+        - Deep
+        - Quick
+
       attributes:
         error: "{{ states('sensor.neato_vacuum_robot_error') }}"
       start:
@@ -36,3 +47,9 @@
         service: button.press
         target:
           entity_id: button.neato_vacuum_locate_robot
+      set_fan_speed:
+        service: select.select_option
+        target:
+          entity_id: select.neato_vacuum_navigation_mode
+        data:
+          option: "{{ fan_speed }}"
