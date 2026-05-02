@@ -17,32 +17,32 @@ I suspect that the D4 looks the same as the D3, because from some research the o
 #### D5/D6
 Inside looks practically identical to D3. It has the extra sidebrush motor that is missing in the D3. [source](https://www.youtube.com/watch?v=OqgD7zuyLuA) 
 
-![d5](./pics/other-robots/d5.png)
+![d5](/pics/other-robots/d5.png)
 #### D7
 Looks once again practically identical to the D3. It has the extra sidebrush motor and the status leds are from a separate board. [source](https://www.youtube.com/watch?v=i-CzfMNqBFw)
 
-![d7](./pics/other-robots/d7.png)
+![d7](/pics/other-robots/d7.png)
 
 ### Pinout for D3
 But I am very very certain it is the same for D3/D4/D5/D6/D7.
 
 The pinout looks like this:
 
-![pinout on d3](./pics/d3/pinout.png)
-![pinout connected](./pics/d3/pinout-connected.png)
+![pinout on d3](/pics/d3/pinout.png)
+![pinout connected](/pics/d3/pinout-connected.png)
 
 (The pin labled 3.3V? is a 3.3V pin)
 
 my setup
-![my setup](./pics/d3/pinout-tty-setup.jpg)
+![my setup](/pics/d3/pinout-tty-setup.jpg)
 
 #### D70/D75/D80/D85
 These use a compleatly different pcb and they have the serial debug strips on the left side of the chassi. 
 
 d80
-![d80](./pics/other-robots/d80.png)
+![d80](/pics/other-robots/d80.png)
 d85
-![d85](./pics/other-robots/d85.png)
+![d85](/pics/other-robots/d85.png)
 
 [source d80](https://www.youtube.com/watch?v=oIHImYWqOh4)
 [source d85](https://www.youtube.com/watch?v=DixC1pDCsh8)
@@ -50,7 +50,7 @@ d85
 I suspect the D70 and D75 look the same.
 
 The pinout for these should be like this:
-![pinout for d70/d75/d80/85](./pics/other-robots/pinout.d70-d75-d80-d85.png)
+![pinout for d70/d75/d80/85](/pics/other-robots/pinout.d70-d75-d80-d85.png)
 
 [source](https://github.com/jeroenterheerdt/neato-serial/issues/3#issuecomment-510543522)
 
@@ -143,7 +143,7 @@ TestMode - Sets TestMode on or off. Some commands can only be run in TestMode.
 Upload - Uploads new program to the robot.
 ```
 
-Now the commandline is not case-sensetive and it also checks if the string you written is part of a command or parameter for a command. If it is an only match it will "autocompleage" the command for you, if multiple matches then it will list what it could be. Thanks to this functionality I have discovered some commands that is not documented in the `Help` command:
+Now the commandline is not case-sensetive and it also checks if the string you written is part of a command or parameter for a command. If it is an only match it will "autocomplete" the command for you, if multiple matches then it will list what it could be. Thanks to this functionality I have discovered some commands that is not documented in the `Help` command:
 ```
 GetActiveServices
 GetLoggingType
