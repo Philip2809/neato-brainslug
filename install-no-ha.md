@@ -86,8 +86,8 @@ Eventually there will be updates, either as new features or stability fixes, how
     |`gen2`  | `gen3` |
     |---|---|
     | [ESP32](https://github.com/philip2809/neato-brainslug/releases/latest/download/nbs-gen2-esp32.ota.bin) | [ESP32](https://github.com/philip2809/neato-brainslug/releases/latest/download/nbs-gen3-esp32.ota.bin) |
-    | [ESP32-S3](https://github.com/philip2809/neato-brainslug/releases/latest/download/nbs-gen2-esp32-s3.ota.bin) | [ESP32-S3](https://github.com/philip2809/neato-brainslug/releases/latest/download/nbs-gen3-esp32-s3.ota.bin) |
-    | [ESP32-C3](https://github.com/philip2809/neato-brainslug/releases/latest/download/nbs-gen2-esp32-c3.ota.bin) | [ESP32-C3](https://github.com/philip2809/neato-brainslug/releases/latest/download/nbs-gen3-esp32-c3.ota.bin) |
+    | [ESP32-S3](https://github.com/philip2809/neato-brainslug/releases/latest/download/nbs-gen2-esp32s3.ota.bin) | [ESP32-S3](https://github.com/philip2809/neato-brainslug/releases/latest/download/nbs-gen3-esp32s3.ota.bin) |
+    | [ESP32-C3](https://github.com/philip2809/neato-brainslug/releases/latest/download/nbs-gen2-esp32c3.ota.bin) | [ESP32-C3](https://github.com/philip2809/neato-brainslug/releases/latest/download/nbs-gen3-esp32c3.ota.bin) |
 2. Go to the webserver of the device and upload the file under the OTA section, then press "UPDATE"
     ![OTA update](pics/setup/step_6-webserver-ota.png)
 3. Wait for it to update and restart then refresh the page, you should now be on the latest version!
